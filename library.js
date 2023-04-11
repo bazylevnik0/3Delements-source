@@ -7,7 +7,7 @@ export var animates_handlers = {};
 
 //api
 export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotation_y,rotation_z,color,text) {
-    console.log("create_3D_button\n");
+    console.log("create_3D_button in",canvas_id,"\n");
     prepare_WebGL_context(canvas_id);
     
     objects_materials[canvas_id] = {};
@@ -34,10 +34,9 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 //common functions for api's
 export function prepare_WebGL_context(canvas_id,library="three.js"){
     let canvas = document.getElementById(canvas_id);
-    console.log("prepare_WebGL_context\n");
+    console.log("prepare_WebGL_context for ",canvas_id,"\n");
     scenes_cameras_renderers[canvas_id] = {}
     scenes_cameras_renderers[canvas_id].scene    = new THREE.Scene();
     scenes_cameras_renderers[canvas_id].camera   = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
     scenes_cameras_renderers[canvas_id].renderer = new THREE.WebGLRenderer( { canvas: canvas } );
 }
-
