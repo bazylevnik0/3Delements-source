@@ -1,5 +1,4 @@
 import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.151.3/three.module.js';
-//not remember but maybe it need be like a module or something like this
 
 export var scenes_cameras_renderers = {};
 export var objects_materials = {};
@@ -25,7 +24,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 	    objects_materials[canvas_id].object.rotation.x += 0.01;
 	    objects_materials[canvas_id].object.rotation.y += 0.01;
 
-	    renderer.render( scenes_cameras_renderers[canvas_id].scene, scenes_cameras_renderers[canvas_id].camera );
+	    scenes_cameras_renderers[canvas_id].renderer.render( scenes_cameras_renderers[canvas_id].scene, scenes_cameras_renderers[canvas_id].camera );
     }
 
     animates_handlers[canvas_id].animate();
@@ -33,10 +32,11 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 
 //common functions for api's
 export function prepare_WebGL_context(canvas_id,library="three.js"){
+    let canvas = document.getElementById(canvas_id);
     console.log("prepare_WebGL_context\n");
     scenes_cameras_renderers[canvas_id] = {}
     scenes_cameras_renderers[canvas_id].scene    = new THREE.Scene();
     scenes_cameras_renderers[canvas_id].camera   = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    scenes_cameras_renderers[canvas_id].renderer = new THREE.WebGLRenderer();   
+    scenes_cameras_renderers[canvas_id].renderer = new THREE.WebGLRenderer( { canvas: canvas } );
 }
 
