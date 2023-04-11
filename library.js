@@ -1,4 +1,5 @@
 import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.151.3/three.module.js';
+//1
 
 export var scenes_cameras_renderers = {};
 export var objects_materials = {};
@@ -13,7 +14,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
     const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
     objects_materials[canvas_id].object = new THREE.Mesh( geometry, material );
-    scene.add( objects_materials[canvas_id].object );
+    scenes_cameras_renderers[canvas_id].scene.add( objects_materials[canvas_id].object );
 
     scenes_cameras_renderers[canvas_id].camera.position.z = 5;
 
