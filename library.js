@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.151.3/three.min.js';
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.151.3/three.module.js';
 //not remember but maybe it need be like a module or something like this
 
 export var scenes_cameras_renderers = {};
