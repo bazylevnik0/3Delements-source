@@ -1,9 +1,9 @@
 import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/0.151.3/three.min.js';
 //not remember but maybe it need be like a module or something like this
 
-var scenes_cameras_renderers = {};
+export var scenes_cameras_renderers = {};
 //api
-function create_3D_button(canvas_id,caller,width,height,rotation_x,rotation_y,rotation_z,color,text) {
+export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotation_y,rotation_z,color,text) {
     console.log("create_3D_button\n");
     prepare_WebGL_context(canvas_id);
 //grab canvas element
@@ -13,7 +13,7 @@ function create_3D_button(canvas_id,caller,width,height,rotation_x,rotation_y,ro
 }
 
 //common functions for api's
-function prepare_WebGL_context(canvas_id,library="three.js"){
+export function prepare_WebGL_context(canvas_id,library="three.js"){
     console.log("prepare_WebGL_context\n");
     scenes_cameras_renderers[canvas_id] = {}
     scenes_cameras_renderers[canvas_id].scene    = new THREE.Scene();
