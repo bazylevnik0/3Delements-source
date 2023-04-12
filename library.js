@@ -13,11 +13,12 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     prepare_WebGL_context(canvas_id);
     
     objects_materials_models[canvas_id] = {};
+    /*
     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
     const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
     objects_materials_models[canvas_id].object = new THREE.Mesh( geometry, material );
     scenes_cameras_renderers[canvas_id].scene.add( objects_materials_models[canvas_id].object );
-    
+    */
     const dracoLoader = new DRACOLoader();
 			dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
 
@@ -49,8 +50,8 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     animates_handlers[canvas_id].animate = function () {
 	    requestAnimationFrame( animates_handlers[canvas_id].animate );
 
-	    objects_materials_models[canvas_id].object.rotation.x += 0.01;
-	    objects_materials_models[canvas_id].object.rotation.y += 0.01;
+	    //objects_materials_models[canvas_id].object.rotation.x += 0.01;
+	    //objects_materials_models[canvas_id].object.rotation.y += 0.01;
 
 	    scenes_cameras_renderers[canvas_id].renderer.render( scenes_cameras_renderers[canvas_id].scene, scenes_cameras_renderers[canvas_id].camera );
     }
