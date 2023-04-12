@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
 export var scenes_cameras_renderers = {};
-export var objects_materials = {};
+export var objects_materials_models = {};
 export var animates_handlers = {};
 
 //api
@@ -12,11 +12,36 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     console.log("create_3D_button in",canvas_id,"\n");
     prepare_WebGL_context(canvas_id);
     
-    objects_materials[canvas_id] = {};
+    objects_materials_models[canvas_id] = {};
     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
     const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    objects_materials[canvas_id].object = new THREE.Mesh( geometry, material );
-    scenes_cameras_renderers[canvas_id].scene.add( objects_materials[canvas_id].object );
+    objects_materials_models[canvas_id].object = new THREE.Mesh( geometry, material );
+    scenes_cameras_renderers[canvas_id].scene.add( objects_materials_models[canvas_id].object );
+    
+    const dracoLoader = new DRACOLoader();
+			dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
+
+			const loader = new GLTFLoader();
+			loader.setDRACOLoader( dracoLoader );
+			loader.load( 'models/button.glb', function ( gltf ) {
+
+				objects_materials_models[canvas_id].model = gltf.scene;
+				objects_materials_models[canvas_id].model.position.set( 1, 1, 0 );
+				//model.scale.set( 0.01, 0.01, 0.01 );
+				scenes_cameras_renderers[canvas_id].scene.add( model );
+
+				//mixer = new THREE.AnimationMixer( model );
+				//mixer.clipAction( gltf.animations[ 0 ] ).play();
+
+				//animate();
+
+			}, undefined, function ( e ) {
+
+				console.error( e );
+
+			} );
+
+
 
     scenes_cameras_renderers[canvas_id].camera.position.z = 5;
 
@@ -24,8 +49,8 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     animates_handlers[canvas_id].animate = function () {
 	    requestAnimationFrame( animates_handlers[canvas_id].animate );
 
-	    objects_materials[canvas_id].object.rotation.x += 0.01;
-	    objects_materials[canvas_id].object.rotation.y += 0.01;
+	    objects_materials_models[canvas_id].object.rotation.x += 0.01;
+	    objects_materials_models[canvas_id].object.rotation.y += 0.01;
 
 	    scenes_cameras_renderers[canvas_id].renderer.render( scenes_cameras_renderers[canvas_id].scene, scenes_cameras_renderers[canvas_id].camera );
     }
