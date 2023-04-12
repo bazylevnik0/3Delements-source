@@ -57,6 +57,12 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 			} );
 
 
+    scenes_cameras_renderers[canvas_id].light = {}
+scenes_cameras_renderers[canvas_id].light.ambientLight = new THREE.AmbientLight()
+scenes_cameras_renderers[canvas_id].light.pointLight = new THREE.PointLight()
+scenes_cameras_renderers[canvas_id].light.pointLight.position.set(10, 10, 10)
+scenes_cameras_renderers[canvas_id].scene.add(scenes_cameras_renderers[canvas_id].light.ambientLight)
+scenes_cameras_renderers[canvas_id].scene.add(scenes_cameras_renderers[canvas_id].light.pointLight)
 
     
 
