@@ -24,7 +24,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 
 			const loader = new GLTFLoader();
 			loader.setDRACOLoader( dracoLoader );
-			loader.load( 'models/button.glb', function ( gltf ) {
+			loader.load( 'https://bazylevnik0.github.io/3Delements-source/models/button.glb', function ( gltf ) {
 
 				objects_materials_models[canvas_id].model = gltf.scene;
 				objects_materials_models[canvas_id].model.position.set( 1, 1, 0 );
