@@ -12,6 +12,20 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     console.log("create_3D_button in",canvas_id,"\n");
     prepare_WebGL_context(canvas_id);
     
+    scenes_cameras_renderers[canvas_id].camera.position.z = 5;
+
+    animates_handlers[canvas_id]=  {};
+    animates_handlers[canvas_id].animate = function () {
+	    requestAnimationFrame( animates_handlers[canvas_id].animate );
+
+	    //objects_materials_models[canvas_id].object.rotation.x += 0.01;
+	    //objects_materials_models[canvas_id].object.rotation.y += 0.01;
+
+	    scenes_cameras_renderers[canvas_id].renderer.render( scenes_cameras_renderers[canvas_id].scene, scenes_cameras_renderers[canvas_id].camera );
+    }
+    
+    
+    
     objects_materials_models[canvas_id] = {};
     /*
     const geometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -34,7 +48,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 				//mixer = new THREE.AnimationMixer( model );
 				//mixer.clipAction( gltf.animations[ 0 ] ).play();
 
-				//animate();
+				animates_handlers[canvas_id].animate();
 
 			}, undefined, function ( e ) {
 
@@ -44,19 +58,9 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 
 
 
-    scenes_cameras_renderers[canvas_id].camera.position.z = 5;
+    
 
-    animates_handlers[canvas_id]=  {};
-    animates_handlers[canvas_id].animate = function () {
-	    requestAnimationFrame( animates_handlers[canvas_id].animate );
-
-	    //objects_materials_models[canvas_id].object.rotation.x += 0.01;
-	    //objects_materials_models[canvas_id].object.rotation.y += 0.01;
-
-	    scenes_cameras_renderers[canvas_id].renderer.render( scenes_cameras_renderers[canvas_id].scene, scenes_cameras_renderers[canvas_id].camera );
-    }
-
-    animates_handlers[canvas_id].animate();
+    //animates_handlers[canvas_id].animate();
 }
 
 //common functions for api's
