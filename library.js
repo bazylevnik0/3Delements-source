@@ -29,7 +29,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 				objects_materials_models[canvas_id].model = gltf.scene;
 				objects_materials_models[canvas_id].model.position.set( 1, 1, 0 );
 				//model.scale.set( 0.01, 0.01, 0.01 );
-				scenes_cameras_renderers[canvas_id].scene.add( model );
+				scenes_cameras_renderers[canvas_id].scene.add( objects_materials_models[canvas_id].model );
 
 				//mixer = new THREE.AnimationMixer( model );
 				//mixer.clipAction( gltf.animations[ 0 ] ).play();
