@@ -1,7 +1,8 @@
-import * as THREE from 'https://bazylevnik0.github.io/3Delements-source/libs/three.module.js';
-import { GLTFLoader } from 'https://bazylevnik0.github.io/3Delements-source/libs/GLTFLoader.js';
-import { DRACOLoader } from 'https://bazylevnik0.github.io/3Delements-source/libs/DRACOLoader.js';
+import * as THREE from 'three';
 
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+			
 export var scenes_cameras_renderers = {};
 export var objects_materials = {};
 export var animates_handlers = {};
