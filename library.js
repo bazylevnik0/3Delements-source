@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-
+//1
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -51,5 +51,5 @@ export function prepare_WebGL_context(canvas_id,library="three.js"){
     data[canvas_id].scene    = new THREE.Scene();
                                                                 //must be related to canvas size not to window
     data[canvas_id].camera   = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    data[canvas_id].renderer = new THREE.WebGLRenderer( { canvas: canvas } );
+    data[canvas_id].renderer = new THREE.WebGLRenderer( { canvas: data[canvas_id].canvas } );
 }
