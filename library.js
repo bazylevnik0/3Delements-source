@@ -29,12 +29,12 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
         data[canvas_id].intersects = data[canvas_id].raycaster.intersectObjects(data[canvas_id].scene.children, true)
 
         data[canvas_id].intersects.forEach((hit) => {
-            console.log("button in canvas ",canvas_id," hovered"); 
+            console.log("button in canvas ",canvas_id," hovered\n"); 
         })
     })
     data[canvas_id].canvas.addEventListener('click', (e) => {
       intersects.forEach((hit) => {
-        console.log("button in canvas ",canvas_id," pressed"); 
+        console.log("button in canvas ",canvas_id," pressed\n"); 
       })
     })
 
