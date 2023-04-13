@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test animation 5
+//test hover 1
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
