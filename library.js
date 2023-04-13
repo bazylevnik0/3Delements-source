@@ -16,13 +16,43 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     data[canvas_id].clock = new THREE.Clock();
     data[canvas_id].camera.position.z = 5; //default position of camera
     data[canvas_id].animate = function () {
-        let delta = data[canvas_id].clock.getDelta();
-		data[canvas_id].mixer.update( delta );
+     	data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() );
 
 	    requestAnimationFrame( data[canvas_id].animate );
 	    data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
     }
-    
+    data[canvas_id].canvas.addEventListener('pointermove', (e) => {
+        data[canvas_id].mouse.set((e.clientX / data[canvas_id].canvas.width) * 2 - 1, -(e.clientY / data[canvas_id].canvas.height) * 2 + 1)
+        
+        data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
+        data[canvas_id].intersects = data[canvas_id].raycaster.intersectObjects(data[canvas_id].scene.children, true)
+
+        /*
+          // If a previously hovered item is not among the hits we must call onPointerOut
+          Object.keys(hovered).forEach((key) => {
+            const hit = data[canvas_id].intersects.find((hit) => hit.object.uuid === key)
+            if (hit === undefined) {
+              const hoveredItem = hovered[key]
+              if (hoveredItem.object.onPointerOver) hoveredItem.object.onPointerOut(hoveredItem)
+              delete hovered[key]
+            }
+          })
+        */
+        
+          data[canvas_id].intersects.forEach((hit) => {
+            // If a hit has not been flagged as hovered we must call onPointerOver
+            console.log(hit.object.uuid);
+            /*
+            if (!hovered[hit.object.uuid]) {
+              hovered[hit.object.uuid] = hit
+              if (hit.object.onPointerOver) hit.object.onPointerOver(hit)
+            }
+            */
+            // Call onPointerMove
+            //if (hit.object.onPointerMove) hit.object.onPointerMove(hit)
+          })
+    })
+
     //load models 
     let dracoLoader = new DRACOLoader();
 		  dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
@@ -52,7 +82,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     data[canvas_id].scene.add(data[canvas_id].ambientLight)
     data[canvas_id].scene.add(data[canvas_id].pointLight)
     
-    console.log("... end create_3D_button in ",canvas_id);
+    console.log("...end create_3D_button in ",canvas_id);
 }
 
 //common functions for api's
@@ -61,9 +91,11 @@ export function prepare_WebGL_context(canvas_id,library="three.js"){
     
     data[canvas_id].canvas = document.getElementById(canvas_id);
     data[canvas_id].scene    = new THREE.Scene();
-                                                                //must be related to canvas size not to window
-    data[canvas_id].camera   = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    data[canvas_id].camera   = new THREE.PerspectiveCamera( 75, canvas.width / canvas.height, 0.1, 1000 );
     data[canvas_id].renderer = new THREE.WebGLRenderer( { canvas: data[canvas_id].canvas, alpha: true } );
    
+    data[canvas_id].raycaster = new THREE.Raycaster();
+    data[canvas_id].mouse = new THREE.Vector2()
+    
     console.log("...end prepare_WebGL_context for ",canvas_id);
 }
