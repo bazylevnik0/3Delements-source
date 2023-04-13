@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test animation 4
+//test animation 5
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -13,9 +13,10 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     prepare_WebGL_context(canvas_id);
     
     //set animation loop and handlers
+    data[canvas_id].clock = new THREE.Clock();
     data[canvas_id].camera.position.z = 5; //default position of camera
     data[canvas_id].animate = function () {
-        let delta = clock.getDelta();
+        let delta = data[canvas_id].clock.getDelta();
 		data[canvas_id].mixer.update( delta );
 
 	    requestAnimationFrame( data[canvas_id].animate );
@@ -25,8 +26,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     //load models 
     let dracoLoader = new DRACOLoader();
 		  dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
-
-	let loader = new GLTFLoader();
+    let loader = new GLTFLoader();
 		  loader.setDRACOLoader( dracoLoader );
 		  loader.load( 'https://bazylevnik0.github.io/3Delements-source/models/button.glb', function ( gltf ) {
 				data[canvas_id].model = gltf.scene;
