@@ -29,8 +29,8 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 				data[canvas_id].model.position.set( 1, 1, 0 );
 				//model.scale.set( 0.01, 0.01, 0.01 );
 				data[canvas_id].scene.add( data[canvas_id].model );
-				//mixer = new THREE.AnimationMixer( model );
-				//mixer.clipAction( gltf.animations[ 0 ] ).play();
+				data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
+				data[canvas_id].mixer.clipAction( gltf.animations[ 0 ] ).play(); //temp!
 				data[canvas_id].animate();
 			}, undefined, function ( e ) {
 				console.error( e );
