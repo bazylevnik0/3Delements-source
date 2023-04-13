@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test hover 3
+//test hover 4
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -32,7 +32,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
             console.log("button in canvas ",canvas_id," hovered"); 
         })
     })
-    data[canvas_id].canvas..addEventListener('click', (e) => {
+    data[canvas_id].canvas.addEventListener('click', (e) => {
       intersects.forEach((hit) => {
         console.log("button in canvas ",canvas_id," pressed"); 
       })
