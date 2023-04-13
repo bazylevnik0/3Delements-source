@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test hover 2
+//test hover 3
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -14,7 +14,8 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     
     //set animation loop and handlers
     data[canvas_id].clock = new THREE.Clock();
-    data[canvas_id].camera.position.z = 5; //default position of camera
+    data[canvas_id].camera.position.z = 3;     
+    data[canvas_id].camera.position.x = -1; //default position of camera
     data[canvas_id].animate = function () {
      	data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() );
 
@@ -27,30 +28,14 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
         data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
         data[canvas_id].intersects = data[canvas_id].raycaster.intersectObjects(data[canvas_id].scene.children, true)
 
-        /*
-          // If a previously hovered item is not among the hits we must call onPointerOut
-          Object.keys(hovered).forEach((key) => {
-            const hit = data[canvas_id].intersects.find((hit) => hit.object.uuid === key)
-            if (hit === undefined) {
-              const hoveredItem = hovered[key]
-              if (hoveredItem.object.onPointerOver) hoveredItem.object.onPointerOut(hoveredItem)
-              delete hovered[key]
-            }
-          })
-        */
-        
-          data[canvas_id].intersects.forEach((hit) => {
-            // If a hit has not been flagged as hovered we must call onPointerOver
-            console.log(hit.object.uuid);
-            /*
-            if (!hovered[hit.object.uuid]) {
-              hovered[hit.object.uuid] = hit
-              if (hit.object.onPointerOver) hit.object.onPointerOver(hit)
-            }
-            */
-            // Call onPointerMove
-            //if (hit.object.onPointerMove) hit.object.onPointerMove(hit)
-          })
+        data[canvas_id].intersects.forEach((hit) => {
+            console.log("button in canvas ",canvas_id," hovered"); 
+        })
+    })
+    data[canvas_id].canvas..addEventListener('click', (e) => {
+      intersects.forEach((hit) => {
+        console.log("button in canvas ",canvas_id," pressed"); 
+      })
     })
 
     //load models 
