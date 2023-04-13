@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test hover 4
+//test hover 5
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -14,8 +14,8 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     
     //set animation loop and handlers
     data[canvas_id].clock = new THREE.Clock();
-    data[canvas_id].camera.position.z = 3;     
-    data[canvas_id].camera.position.x = -1; //default position of camera
+    data[canvas_id].camera.position.z = 5;     
+    data[canvas_id].camera.position.x = 1; //default position of camera
     data[canvas_id].animate = function () {
      	data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() );
 
@@ -33,7 +33,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
         })
     })
     data[canvas_id].canvas.addEventListener('click', (e) => {
-      intersects.forEach((hit) => {
+      data[canvas_id].intersects.forEach((hit) => {
         console.log("button in canvas ",canvas_id," pressed\n"); 
       })
     })
@@ -50,7 +50,6 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 				data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
 				data[canvas_id].animations = gltf.animations;
 				//temp:
-				console.log("testing: ",gltf.animations);
 				for (let i = 0; i < gltf.animations.length; i++) {                      
                     //data[canvas_id].mixer.clipAction( gltf.animations[ i ] ).play(); 
                 }      
