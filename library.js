@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test hover 5
+
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -14,8 +14,9 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     
     //set animation loop and handlers
     data[canvas_id].clock = new THREE.Clock();
-    data[canvas_id].camera.position.z = 5;     
-    data[canvas_id].camera.position.x = 1; //default position of camera
+    data[canvas_id].camera.position.x = 1;     
+    data[canvas_id].camera.position.y = 1;  
+    data[canvas_id].camera.position.z = 2.5; //default position of camera
     data[canvas_id].animate = function () {
      	data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() );
 
