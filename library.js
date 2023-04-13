@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test hover 1
+//test hover 2
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -67,7 +67,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 				//temp:
 				console.log("testing: ",gltf.animations);
 				for (let i = 0; i < gltf.animations.length; i++) {                      
-                    data[canvas_id].mixer.clipAction( gltf.animations[ i ] ).play(); 
+                    //data[canvas_id].mixer.clipAction( gltf.animations[ i ] ).play(); 
                 }      
                 //
 				data[canvas_id].animate();
@@ -91,7 +91,7 @@ export function prepare_WebGL_context(canvas_id,library="three.js"){
     
     data[canvas_id].canvas = document.getElementById(canvas_id);
     data[canvas_id].scene    = new THREE.Scene();
-    data[canvas_id].camera   = new THREE.PerspectiveCamera( 75, canvas.width / canvas.height, 0.1, 1000 );
+    data[canvas_id].camera   = new THREE.PerspectiveCamera( 75, data[canvas_id].canvas.width / data[canvas_id].canvas.height, 0.1, 1000 );
     data[canvas_id].renderer = new THREE.WebGLRenderer( { canvas: data[canvas_id].canvas, alpha: true } );
    
     data[canvas_id].raycaster = new THREE.Raycaster();
