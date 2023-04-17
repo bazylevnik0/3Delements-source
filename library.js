@@ -1,12 +1,13 @@
 import * as THREE from 'three';
-//test click animation 9
+//fix many canvas and click bug 1
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
 export var data = {};
 
 //api
-export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotation_y,rotation_z,color,text) {
+//export function create_3D_button(canvas_id,caller_click,caller_hover,width,height,rotation_x,rotation_y,rotation_z,color,text) {
+export function create_3D_button(canvas_id,caller_click,rotation_x,rotation_y,rotation_z) {
     console.log("start create_3D_button in ",canvas_id,"...");
     
     data[canvas_id] = {};
@@ -14,9 +15,9 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     
     //set animation loop and handlers
     data[canvas_id].clock = new THREE.Clock();
-    data[canvas_id].camera.position.x = 1;   //  
+    data[canvas_id].camera.position.x = 1;  //  
     data[canvas_id].camera.position.y = 1;  //
-    data[canvas_id].camera.position.z = 2.5; //default position of camera
+    data[canvas_id].camera.position.z = 2.5;//default position of camera
     data[canvas_id].animate = function () {
      	data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() );
 
@@ -24,8 +25,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 	    data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
     }
     data[canvas_id].canvas.addEventListener('pointermove', (e) => {
-                                                //try window.innerWidth
-        data[canvas_id].mouse.set((e.clientX / data[canvas_id].canvas.width) * 2 - 1, -(e.clientY / data[canvas_id].canvas.height) * 2 + 1)
+        data[canvas_id].mouse.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1)
         
         data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
         data[canvas_id].intersects = data[canvas_id].raycaster.intersectObjects(data[canvas_id].scene.children, true)
