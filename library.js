@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test click animation 5
+//test click animation 6
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -24,6 +24,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 	    data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
     }
     data[canvas_id].canvas.addEventListener('pointermove', (e) => {
+                                                //try window.innerWidth
         data[canvas_id].mouse.set((e.clientX / data[canvas_id].canvas.width) * 2 - 1, -(e.clientY / data[canvas_id].canvas.height) * 2 + 1)
         
         data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
@@ -38,7 +39,7 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
         console.log("button in canvas ",canvas_id," pressed\n"); 
         for (let i = 0; i < data[canvas_id].animations.length; i++) {   
             let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] );       
-                action.setLoop( THREE.LoopOnce );
+                animation.setLoop( THREE.LoopOnce );
                 animation.play(); 
         }      
       })
