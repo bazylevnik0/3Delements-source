@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//fix many canvas and click bug 1
+//rotate button .glb and add caller
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -37,6 +37,7 @@ export function create_3D_button(canvas_id,caller_click,rotation_x,rotation_y,ro
     data[canvas_id].canvas.addEventListener('click', (e) => {
       data[canvas_id].intersects.forEach((hit) => {
         console.log("button in canvas ",canvas_id," pressed\n"); 
+        caller();
         for (let i = 0; i < data[canvas_id].animations.length; i++) {   
             let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] ); 
                 animation.reset();
@@ -53,7 +54,7 @@ export function create_3D_button(canvas_id,caller_click,rotation_x,rotation_y,ro
 		  loader.setDRACOLoader( dracoLoader );
 		  loader.load( 'https://bazylevnik0.github.io/3Delements-source/models/button.glb', function ( gltf ) {
 				data[canvas_id].model = gltf.scene;
-				                                    //0,0,0
+				                                  //0, 0, 0
 				data[canvas_id].model.position.set( 1, 1, 0 );
 				//data[canvas_id].model.scale.set( 1+width, 1+height, 1 );
 				//data[canvas_id].model.rotation.set( 0+rotation_x, 0+rotation_y, 0+rotation_z );
