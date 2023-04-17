@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//rotate button .glb and add caller 2
+//rotate button .glb 1
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -7,7 +7,7 @@ export var data = {};
 
 //api
 //export function create_3D_button(canvas_id,caller_click,caller_hover,width,height,rotation_x,rotation_y,rotation_z,color,text) {
-export function create_3D_button(canvas_id,caller,rotation_x,rotation_y,rotation_z) {
+export function create_3D_button(canvas_id,caller,rotation) {
     console.log("start create_3D_button in ",canvas_id,"...");
     
     data[canvas_id] = {};
@@ -57,7 +57,7 @@ export function create_3D_button(canvas_id,caller,rotation_x,rotation_y,rotation
 				                                  //0, 0, 0
 				data[canvas_id].model.position.set( 1, 1, 0 );
 				//data[canvas_id].model.scale.set( 1+width, 1+height, 1 );
-				//data[canvas_id].model.rotation.set( 0+rotation_x, 0+rotation_y, 0+rotation_z );
+				data[canvas_id].model.rotation.set( Math.PI / 2+rotation,0, 0 );
 				data[canvas_id].scene.add( data[canvas_id].model );
 				data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
 				data[canvas_id].animations = gltf.animations;
