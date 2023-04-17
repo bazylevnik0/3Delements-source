@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test click animation 3
+//test click animation 4
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -14,8 +14,8 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     
     //set animation loop and handlers
     data[canvas_id].clock = new THREE.Clock();
-    data[canvas_id].camera.position.x = 1;     
-    data[canvas_id].camera.position.y = 1;  
+    data[canvas_id].camera.position.x = 1;   //  
+    data[canvas_id].camera.position.y = 1;  //
     data[canvas_id].camera.position.z = 2.5; //default position of camera
     data[canvas_id].animate = function () {
      	data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() );
@@ -36,9 +36,9 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
     data[canvas_id].canvas.addEventListener('click', (e) => {
       data[canvas_id].intersects.forEach((hit) => {
         console.log("button in canvas ",canvas_id," pressed\n"); 
-        for (let i = 0; i < data[canvas_id].animations.length; i++) {                      
-            let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] );
-                animation.clampWhenFinished=true;            
+        for (let i = 0; i < data[canvas_id].animations.length; i++) {   
+            data[canvas_id].animations[i].clampWhenFinished=true;     
+            let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] );       
                 animation.play(); 
         }      
       })
@@ -51,7 +51,10 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 		  loader.setDRACOLoader( dracoLoader );
 		  loader.load( 'https://bazylevnik0.github.io/3Delements-source/models/button.glb', function ( gltf ) {
 				data[canvas_id].model = gltf.scene;
+				                                    //0,0,0
 				data[canvas_id].model.position.set( 1, 1, 0 );
+				//data[canvas_id].model.scale.set( 1+width, 1+height, 1 );
+				//data[canvas_id].model.rotation.set( 0+rotation_x, 0+rotation_y, 0+rotation_z );
 				data[canvas_id].scene.add( data[canvas_id].model );
 				data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
 				data[canvas_id].animations = gltf.animations;
