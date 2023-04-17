@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test click animation 4
+//test click animation 5
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -37,8 +37,8 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
       data[canvas_id].intersects.forEach((hit) => {
         console.log("button in canvas ",canvas_id," pressed\n"); 
         for (let i = 0; i < data[canvas_id].animations.length; i++) {   
-            data[canvas_id].animations[i].clampWhenFinished=true;     
             let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] );       
+                action.setLoop( THREE.LoopOnce );
                 animation.play(); 
         }      
       })
