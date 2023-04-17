@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//test click animation 7
+//test click animation 8
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -38,7 +38,8 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
       data[canvas_id].intersects.forEach((hit) => {
         console.log("button in canvas ",canvas_id," pressed\n"); 
         for (let i = 0; i < data[canvas_id].animations.length; i++) {   
-            let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] );       
+            let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] ); 
+                animation.setLoop( THREE.LoopOnce );
                 animation.play(); 
         }      
       })
@@ -58,10 +59,6 @@ export function create_3D_button(canvas_id,caller,width,height,rotation_x,rotati
 				data[canvas_id].scene.add( data[canvas_id].model );
 				data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
 				data[canvas_id].animations = gltf.animations;
-				 for (let i = 0; i < data[canvas_id].animations.length; i++) {   
-                    let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] );       
-                        animation.setLoop( THREE.LoopOnce );
-                    }      
 				data[canvas_id].animate();
 			}, undefined, function ( e ) {
 				console.error( e );
