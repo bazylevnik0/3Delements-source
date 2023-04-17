@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-//rotate button .glb and add caller
+//rotate button .glb and add caller 2
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 			
@@ -7,7 +7,7 @@ export var data = {};
 
 //api
 //export function create_3D_button(canvas_id,caller_click,caller_hover,width,height,rotation_x,rotation_y,rotation_z,color,text) {
-export function create_3D_button(canvas_id,caller_click,rotation_x,rotation_y,rotation_z) {
+export function create_3D_button(canvas_id,caller,rotation_x,rotation_y,rotation_z) {
     console.log("start create_3D_button in ",canvas_id,"...");
     
     data[canvas_id] = {};
