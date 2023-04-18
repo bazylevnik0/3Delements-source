@@ -2,7 +2,8 @@
 //things to do:
 //change camera to isometric - done
 //fix positions - done
-//fix bug with first element
+//fix bug with first element - done
+//fix bug when you resize canvas -done
 //add width/height/and all args
 //add text to button
 
@@ -31,7 +32,8 @@ export function create_3D_button(canvas_id,caller,rotation_x,rotation_y,rotation
 	    data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
     }
     data[canvas_id].canvas.addEventListener('pointermove', (e) => {
-        data[canvas_id].mouse.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1)
+                            
+        data[canvas_id].mouse.set((e.clientX - data[canvas_id].canvas.offsetLeft) / data[canvas_id].canvas.clientWidth * 2 - 1, (e.clientY - data[canvas_id].canvas.offsetTop) / data[canvas_id].canvas.clientHeight  * -2 + 1);
         
         data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
         data[canvas_id].intersects = data[canvas_id].raycaster.intersectObjects(data[canvas_id].scene.children, true)
@@ -41,8 +43,9 @@ export function create_3D_button(canvas_id,caller,rotation_x,rotation_y,rotation
         })
     })
     data[canvas_id].canvas.addEventListener('click', (e) => {
-     console.log('test');
+     console.log("test");
       data[canvas_id].intersects.forEach((hit) => {
+        console.log("intersects");
         console.log("button in canvas ",canvas_id," pressed\n"); 
         caller();
         for (let i = 0; i < data[canvas_id].animations.length; i++) {   
@@ -88,8 +91,8 @@ export function prepare_WebGL_context(canvas_id,library="three.js"){
     console.log("start prepare_WebGL_context for ",canvas_id,"...");
     
     data[canvas_id].canvas = document.getElementById(canvas_id);
-    data[canvas_id].scene    = new THREE.Scene();
-    data[canvas_id].camera = new THREE.OrthographicCamera( 3 / - 2, 3 / 2, 3 / 2, 3 / - 2, -1, 1000 );
+    data[canvas_id].scene  = new THREE.Scene();
+    data[canvas_id].camera = new THREE.OrthographicCamera( data[canvas_id].canvas.width/75 / - 2, data[canvas_id].canvas.width/75 / 2, data[canvas_id].canvas.height/75 / 2, data[canvas_id].canvas.height/75 / - 2, -10, 1000 );
     //data[canvas_id].camera   = new THREE.PerspectiveCamera( 75, data[canvas_id].canvas.width / data[canvas_id].canvas.height, 0.1, 1000 );
     data[canvas_id].renderer = new THREE.WebGLRenderer( { canvas: data[canvas_id].canvas, alpha: true } );
    
