@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.151.3/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.151.3/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>buttons:</h1>
+    <p>this is three 3D buttons made with Three.js</p>
+     <canvas id="canvas_1" width="400" height="200"></canvas>
+     <canvas id="canvas_2" width="200" height="200"></canvas>
+     <canvas id="canvas_3" width="200" height="200"></canvas>
+    <br>
+    <p><i><b>how it must works?</b></i>
+    <ul>
+      <li>include Three.js library in HTML</li>
+      <li>include our Library in js</li>
+      <li>add canvas element with id in body of HTML</li>
+      <li>add function create_3D_button in JS with parameters: <i>callers of user functions,size,rotation,etc...</i></li>
+    </ul>
+  </body>
+  <script src="index.js" type="module"></script>
+</html>
