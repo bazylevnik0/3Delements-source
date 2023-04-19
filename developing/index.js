@@ -1,9 +1,21 @@
 import * as Library from "./library.js"
 
-let user_function = function(){
-  console.log("user_function\n")
+
+let user_function = function(user_vars){
+    console.log("user_function with user vars:",user_vars[0],user_vars[1]);
 }
-user_function();
-Library.create_3D_button("canvas_1",user_function,0.25 ,0.25 ,-0.25);
-Library.create_3D_button("canvas_2",user_function,0 ,0 ,0);
-Library.create_3D_button("canvas_3",user_function,0 ,-0.25 ,0);
+
+let button = {
+    canvas_id: "canvas_1",
+    caller_hover: user_function,
+    caller_hover_args: [1,2],
+    width: 3,
+    height: 1.5,
+    depth: 0.5,
+    rotation_x: 0.1,
+    rotation_y: 0.2,
+    rotation_z: 0.3,
+}
+    button = new Library.Button(button);
+    button.init();
+
