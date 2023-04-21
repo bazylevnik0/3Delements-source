@@ -1,11 +1,11 @@
-//19.04.23
+//21.04.23
 //things to do:
 //change camera to isometric - done
 //fix positions - done
 //fix bug with first element - done
 //fix bug when you resize canvas -done
 //add width/height/and all args -done
-//bug when canvas behind vertical border of screen
+//bug when canvas behind vertical border of screen - done
 //add text to button
 //add color
 //need checks when only width but non height, when rotation_x but non rotation_y
@@ -48,8 +48,8 @@ export class Button {
 	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
         }
         data[canvas_id].canvas.addEventListener('pointermove', (e) => {
-                                
-            data[canvas_id].mouse.set((e.clientX - data[canvas_id].canvas.offsetLeft) / data[canvas_id].canvas.clientWidth * 2 - 1, (e.clientY - data[canvas_id].canvas.offsetTop) / data[canvas_id].canvas.clientHeight  * -2 + 1);
+            console.log(e.clientX,e.clientY,e.clientX - data[canvas_id].canvas.offsetLeft,e.clientY - data[canvas_id].canvas.offsetTop,e.clientX - data[canvas_id].canvas.offsetLeft/ data[canvas_id].canvas.clientWidth * 2 - 1,e.clientY - data[canvas_id].canvas.offsetTop / data[canvas_id].canvas.clientHeight  * -2 + 1);
+            data[canvas_id].mouse.set((e.clientX - data[canvas_id].canvas.offsetLeft) / data[canvas_id].canvas.clientWidth * 2 - 1, (e.clientY - data[canvas_id].canvas.offsetTop) / data[canvas_id].canvas.clientHeight  * -2 + 1- document.scrollTop);
             
             data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
             data[canvas_id].intersects = data[canvas_id].raycaster.intersectObjects(data[canvas_id].scene.children, true)
