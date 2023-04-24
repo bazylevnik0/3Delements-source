@@ -1,4 +1,4 @@
-//21.04.23
+//24.04.23
 //things to do:
 //change camera to isometric - done
 //fix positions - done
@@ -42,7 +42,7 @@ export class Button {
         data[canvas_id].clock = new THREE.Clock();
         data[canvas_id].camera.position.set(0,0,5);
         data[canvas_id].animate = function () {
-         	data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() );
+            data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() );
 
 	        requestAnimationFrame( data[canvas_id].animate );
 	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
@@ -88,12 +88,16 @@ export class Button {
             }      
           })
         })
+        
+        
+        
         let width = this.width;
         let height = this.depth;
         let depth = this.height; //yep little mess, but model is not oriented now
         let rotation_x = this.rotation_x;
         let rotation_y = this.rotation_y;
         let rotation_z = this.rotation_z;
+        let text = this.text;
         //load models 
         let dracoLoader = new DRACOLoader();
 		      dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
@@ -113,11 +117,43 @@ export class Button {
 				    data[canvas_id].scene.add( data[canvas_id].model );
 				    data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
 				    data[canvas_id].animations = gltf.animations;
-				    data[canvas_id].animate();
-			    }, undefined, function ( e ) {
+				    
+				    
+				    //add text
+				    //create image
+				    data[canvas_id].canvas_text = document.createElement('canvas').getContext('2d');
+                    data[canvas_id].canvas_text.canvas.width = 100;
+                    data[canvas_id].canvas_text.canvas.height = 100;
+                    
+                    data[canvas_id].canvas_text.fillStyle = "blue";
+                    data[canvas_id].canvas_text.fillRect(0, 0, data[canvas_id].canvas_text.canvas.width, data[canvas_id].canvas_text.canvas.height);
+                    data[canvas_id].canvas_text.font = 'Bold 20px Arial';
+                    data[canvas_id].canvas_text.fillStyle = 'green';
+                    data[canvas_id].canvas_text.fillText("asd", 0, 20);
+
+                    document.body.appendChild(data[canvas_id].canvas_text.canvas);
+                    
+                    //canvas contents will be used for a texture
+                    data[canvas_id].texture = new THREE.CanvasTexture(data[canvas_id].canvas_text.canvas) 
+                    //get all children inside gltf file
+	                data[canvas_id].model.traverse( function ( child ) {
+		                //get the meshes
+		                if (child.isMesh ) {
+		                    child.material = new THREE.MeshBasicMaterial({
+			                                    color: new THREE.Color(0xff0000),
+			                                    map: data[canvas_id].texture,
+			                                });
+			                child.material.map.needsUpdate = true;
+			                child.material.map.mapping = THREE.CubeReflectionMapping;
+			            }
+	                })
+	        
+	                data[canvas_id].animate();
+			    }, undefined, function ( e ) {  
 				    console.error( e );
 			    } );
-
+    
+        
         //add light
         data[canvas_id].ambientLight = new THREE.AmbientLight()
         data[canvas_id].pointLight = new THREE.PointLight()

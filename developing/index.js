@@ -7,18 +7,19 @@ let user_function = function(user_vars){
 
 let button = {
     canvas_id: "canvas_1",
+    text: "test",
     caller_hover: user_function,
     caller_hover_args: [1,2],
-    width: 3,
-    height: 1.5,
-    depth: 0.5,
+    width: 1,
+    height: 1,
+    depth: 1,
     rotation_x: 0.1,
-    rotation_y: 0.2,
-    rotation_z: 0.3,
+    rotation_y: 0.1,
+    rotation_z: 0.0001,
 }
     button = new Library.Button(button);
     button.init();
-
+/*
 let button2 = {
     canvas_id: "canvas_2",
     caller_hover: user_function,
@@ -46,4 +47,4 @@ let button3 = {
 }
     button3 = new Library.Button(button3);
     button3.init();
-
+*/
