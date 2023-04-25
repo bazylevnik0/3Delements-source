@@ -7,14 +7,14 @@ let user_function = function(user_vars){
 
 let button = {
     canvas_id: "canvas_1",
-    text: "test",
+    text: "press me",
     caller_hover: user_function,
     caller_hover_args: [1,2],
     width: 1,
-    height: 1,
+    height: 2,
     depth: 1,
     rotation_x: 0.1,
-    rotation_y: 0.1,
+    rotation_y: 0.3,
     rotation_z: 0.0001,
 }
     button = new Library.Button(button);

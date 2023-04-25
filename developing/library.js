@@ -6,7 +6,9 @@
 //fix bug when you resize canvas -done
 //add width/height/and all args -done
 //bug when canvas behind vertical border of screen - done
-//add text to button
+//add text to button:
+    //add text texture - done
+    //fix rotation and positions - must be depend to button size
 //add color
 //need checks when only width but non height, when rotation_x but non rotation_y
 
@@ -21,6 +23,7 @@ export var data = {};
 export class Button {
   constructor(button) {
     this.canvas_id          = button.canvas_id;
+    this.text               = button.text;
     this.caller_click       = button.caller_click;
     this.caller_click_args  = button.caller_click_args;
     this.caller_hover       = button.caller_hover;
@@ -122,29 +125,27 @@ export class Button {
 				    //add text
 				    //create image
 				    data[canvas_id].canvas_text = document.createElement('canvas').getContext('2d');
-                    data[canvas_id].canvas_text.canvas.width = 100;
-                    data[canvas_id].canvas_text.canvas.height = 100;
+                    data[canvas_id].canvas_text.canvas.width = data[canvas_id].canvas.width;
+                    data[canvas_id].canvas_text.canvas.height = data[canvas_id].canvas.height;
                     
-                    data[canvas_id].canvas_text.fillStyle = "blue";
+                    data[canvas_id].canvas_text.fillStyle = "gray";
                     data[canvas_id].canvas_text.fillRect(0, 0, data[canvas_id].canvas_text.canvas.width, data[canvas_id].canvas_text.canvas.height);
-                    data[canvas_id].canvas_text.font = 'Bold 20px Arial';
-                    data[canvas_id].canvas_text.fillStyle = 'green';
-                    data[canvas_id].canvas_text.fillText("asd", 0, 20);
-
-                    document.body.appendChild(data[canvas_id].canvas_text.canvas);
-                    
+                    data[canvas_id].canvas_text.font = 'Bold '+data[canvas_id].canvas.height/10*height+'px Arial';
+                    data[canvas_id].canvas_text.fillStyle = 'white';
+                    data[canvas_id].canvas_text.fillText(text, data[canvas_id].canvas.width/3.33*width, data[canvas_id].canvas.height/2*height);
                     //canvas contents will be used for a texture
                     data[canvas_id].texture = new THREE.CanvasTexture(data[canvas_id].canvas_text.canvas) 
+                    data[canvas_id].texture.flipY = false;
+                    data[canvas_id].texture.center = new THREE.Vector2( 0.5, 0.5 ); 
+                    data[canvas_id].texture.rotation = Math.PI/2;
                     //get all children inside gltf file
 	                data[canvas_id].model.traverse( function ( child ) {
 		                //get the meshes
 		                if (child.isMesh ) {
-		                    child.material = new THREE.MeshBasicMaterial({
-			                                    color: new THREE.Color(0xff0000),
+		                    child.material = new THREE.MeshStandardMaterial({
 			                                    map: data[canvas_id].texture,
 			                                });
 			                child.material.map.needsUpdate = true;
-			                child.material.map.mapping = THREE.CubeReflectionMapping;
 			            }
 	                })
 	        
@@ -156,9 +157,10 @@ export class Button {
         
         //add light
         data[canvas_id].ambientLight = new THREE.AmbientLight()
+        data[canvas_id].ambientLight.intensity = 0.2;
         data[canvas_id].pointLight = new THREE.PointLight()
         data[canvas_id].pointLight.position.set(10, 10, 10)
-        //data[canvas_id].scene.add(data[canvas_id].ambientLight)
+        data[canvas_id].scene.add(data[canvas_id].ambientLight)
         data[canvas_id].scene.add(data[canvas_id].pointLight)
         
         console.log("...end create_3D_button in ",canvas_id);
