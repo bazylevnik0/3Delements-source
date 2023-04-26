@@ -1,4 +1,4 @@
-//24.04.23
+//26.04.23
 //things to do:
 //change camera to isometric - done
 //fix positions - done
@@ -9,8 +9,10 @@
 //add text to button:
     //add text texture - done
     //fix rotation and positions - must be depend to button size
-//add color
+//add color of button, and maybe text
 //need checks when only width but non height, when rotation_x but non rotation_y
+//multiline string supporting
+//when text_size undefined - set default
 
 import * as THREE from 'three';
 
@@ -24,6 +26,7 @@ export class Button {
   constructor(button) {
     this.canvas_id          = button.canvas_id;
     this.text               = button.text;
+    this.text_size          = button.text_size;
     this.caller_click       = button.caller_click;
     this.caller_click_args  = button.caller_click_args;
     this.caller_hover       = button.caller_hover;
@@ -101,6 +104,7 @@ export class Button {
         let rotation_y = this.rotation_y;
         let rotation_z = this.rotation_z;
         let text = this.text;
+        let text_size = this.text_size;
         //load models 
         let dracoLoader = new DRACOLoader();
 		      dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
@@ -108,10 +112,9 @@ export class Button {
 		      loader.setDRACOLoader( dracoLoader );
 		      loader.load( 'https://bazylevnik0.github.io/3Delements-source/models/button.glb', function ( gltf ) {
 				    data[canvas_id].model = gltf.scene;
-				                   //temporary: must be 0, 0, 0 
 				    data[canvas_id].model.position.set( 0, 0, 0 );
 				    if(width && height && depth){
-				      data[canvas_id].model.scale.set( 1*width, 1*height, 1*depth );
+				      data[canvas_id].model.scale.set( 1*height, 1*depth, 1*width );
 				    }
 				    if(rotation_x && rotation_y && rotation_z){
 				        data[canvas_id].model.rotation.set(0+rotation_x, -1*Math.PI/2+rotation_y, 0+rotation_z);
@@ -125,20 +128,26 @@ export class Button {
 				    //add text
 				    //create image
 				    data[canvas_id].canvas_text = document.createElement('canvas').getContext('2d');
-                    data[canvas_id].canvas_text.canvas.width = data[canvas_id].canvas.width;
-                    data[canvas_id].canvas_text.canvas.height = data[canvas_id].canvas.height;
+                    data[canvas_id].canvas_text.canvas.width  = data[canvas_id].canvas.width*width;
+                    data[canvas_id].canvas_text.canvas.height = data[canvas_id].canvas.height*height;
                     
                     data[canvas_id].canvas_text.fillStyle = "gray";
                     data[canvas_id].canvas_text.fillRect(0, 0, data[canvas_id].canvas_text.canvas.width, data[canvas_id].canvas_text.canvas.height);
-                    data[canvas_id].canvas_text.font = 'Bold '+data[canvas_id].canvas.height/10*height+'px Arial';
+                    data[canvas_id].canvas_text.font = 'Bold '+text_size+'px Arial';
                     data[canvas_id].canvas_text.fillStyle = 'white';
-                    data[canvas_id].canvas_text.fillText(text, data[canvas_id].canvas.width/3.33*width, data[canvas_id].canvas.height/2*height);
+                    //data[canvas_id].canvas_text.fillText(text, 225, 150);
+                      data[canvas_id].canvas_text.fillText(text, 10, data[canvas_id].canvas_text.canvas.height/2+(height*10));
                     //canvas contents will be used for a texture
                     data[canvas_id].texture = new THREE.CanvasTexture(data[canvas_id].canvas_text.canvas) 
                     data[canvas_id].texture.flipY = false;
                     data[canvas_id].texture.center = new THREE.Vector2( 0.5, 0.5 ); 
                     data[canvas_id].texture.rotation = Math.PI/2;
-                    //get all children inside gltf file
+                    data[canvas_id].texture.repeat.set( 2,4 );
+                    data[canvas_id].texture.offset = new THREE.Vector2( -0.05, 0 );
+                    
+                    document.body.appendChild(data[canvas_id].canvas_text.canvas);
+                    
+				    //get all children inside gltf file
 	                data[canvas_id].model.traverse( function ( child ) {
 		                //get the meshes
 		                if (child.isMesh ) {
