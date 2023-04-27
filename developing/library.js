@@ -12,7 +12,8 @@
 //add color of button, and maybe text color - done
 //need checks when only width but non height, when rotation_x but non rotation_y - done
 //when callers can be undefined - done
-//bug with user functions
+//bug with user functions - done
+//bug with click near to object, *i think it something with object size, maybe i need clickbox for it
 //when text undefined - set default
 //when text_size undefined - set default
 //set related resolution, must be soft in all screens
@@ -62,14 +63,14 @@ export class Button {
 	        requestAnimationFrame( data[canvas_id].animate );
 	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
         }
+        let test = 0;
         data[canvas_id].canvas.addEventListener('pointermove', (e) => {
             data[canvas_id].mouse.set((e.clientX - data[canvas_id].canvas.offsetLeft) / data[canvas_id].canvas.clientWidth * 2 - 1, (e.clientY - data[canvas_id].canvas.offsetTop) / data[canvas_id].canvas.clientHeight  * -2 + 1- document.scrollTop);            
             data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
-            data[canvas_id].intersects = []; 
-            data[canvas_id].intersects = data[canvas_id].raycaster.intersectObjects(data[canvas_id].scene.children, false);
-            console.log(data[canvas_id].intersects.length);
-            /*
-               data[canvas_id].intersects.forEach((hit) => {
+            data[canvas_id].intersects = [...[1]]; 
+            data[canvas_id].raycaster.intersectObject(data[canvas_id].model, true, data[canvas_id].intersects);
+            if(data[canvas_id].intersects.length==0)data[canvas_id].hover=0;         
+            data[canvas_id].intersects.forEach((hit) => {
                 switch(data[canvas_id].hover){
                     case undefined:
                         data[canvas_id].hover = 0;
@@ -84,19 +85,28 @@ export class Button {
                     default: 
                        data[canvas_id].hover++;
                        break;
-                }    
+                }
              })
-             data[canvas_id].intersects = [];           
-            */ 
         })
         data[canvas_id].canvas.addEventListener('click', (e) => {
           data[canvas_id].intersects.forEach((hit) => {
-            if(this.caller_click){
-                if(this.caller_click_args){
-                    this.caller_click(this.caller_click_args);
-                } else {   
-                    this.caller_click();
-                }
+            switch(data[canvas_id].click){
+                    case undefined:
+                        data[canvas_id].click = 0;
+                    case 0:
+                        data[canvas_id].click++;
+                    case 1:
+                        if(this.caller_click){
+                            if(this.caller_click_args){
+                                this.caller_click(this.caller_click_args);
+                            } else {   
+                                this.caller_click();
+                            }
+                        }      
+                    default: 
+                       if(data[canvas_id].click>=150)data[canvas_id].click=0;
+                       data[canvas_id].click++;
+                       break;
             }
             for (let i = 0; i < data[canvas_id].animations.length; i++) {   
                 let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] ); 
