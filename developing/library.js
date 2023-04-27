@@ -1,4 +1,4 @@
-//26.04.23
+//27.04.23
 //things to do:
 //change camera to isometric - done
 //fix positions - done
@@ -8,11 +8,18 @@
 //bug when canvas behind vertical border of screen - done
 //add text to button:
     //add text texture - done
-    //fix rotation and positions - must be depend to button size
-//add color of button, and maybe text
-//need checks when only width but non height, when rotation_x but non rotation_y
-//multiline string supporting
+    //fix rotation and positions - must be depend to button size done
+//add color of button, and maybe text color - done
+//need checks when only width but non height, when rotation_x but non rotation_y - done
+//when callers can be undefined - done
+//bug with user functions
+//when text undefined - set default
 //when text_size undefined - set default
+//set related resolution, must be soft in all screens
+//handle resize events
+//multiline string supporting
+//beatify and clearify code
+
 
 import * as THREE from 'three';
 
@@ -25,8 +32,10 @@ export var data = {};
 export class Button {
   constructor(button) {
     this.canvas_id          = button.canvas_id;
+    this.color              = button.color;
     this.text               = button.text;
     this.text_size          = button.text_size;
+    this.text_color         = button.text_color;
     this.caller_click       = button.caller_click;
     this.caller_click_args  = button.caller_click_args;
     this.caller_hover       = button.caller_hover;
@@ -54,31 +63,34 @@ export class Button {
 	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
         }
         data[canvas_id].canvas.addEventListener('pointermove', (e) => {
-            console.log(e.clientX,e.clientY,e.clientX - data[canvas_id].canvas.offsetLeft,e.clientY - data[canvas_id].canvas.offsetTop,e.clientX - data[canvas_id].canvas.offsetLeft/ data[canvas_id].canvas.clientWidth * 2 - 1,e.clientY - data[canvas_id].canvas.offsetTop / data[canvas_id].canvas.clientHeight  * -2 + 1);
-            data[canvas_id].mouse.set((e.clientX - data[canvas_id].canvas.offsetLeft) / data[canvas_id].canvas.clientWidth * 2 - 1, (e.clientY - data[canvas_id].canvas.offsetTop) / data[canvas_id].canvas.clientHeight  * -2 + 1- document.scrollTop);
-            
+            data[canvas_id].mouse.set((e.clientX - data[canvas_id].canvas.offsetLeft) / data[canvas_id].canvas.clientWidth * 2 - 1, (e.clientY - data[canvas_id].canvas.offsetTop) / data[canvas_id].canvas.clientHeight  * -2 + 1- document.scrollTop);            
             data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
-            data[canvas_id].intersects = data[canvas_id].raycaster.intersectObjects(data[canvas_id].scene.children, true)
-        
-            data[canvas_id].intersects.forEach((hit) => {
-                console.log("button in canvas ",canvas_id," hovered\n")
-                switch(data[canvas_id].model.hover){
+            data[canvas_id].intersects = []; 
+            data[canvas_id].intersects = data[canvas_id].raycaster.intersectObjects(data[canvas_id].scene.children, false);
+            console.log(data[canvas_id].intersects.length);
+            /*
+               data[canvas_id].intersects.forEach((hit) => {
+                switch(data[canvas_id].hover){
+                    case undefined:
+                        data[canvas_id].hover = 0;
                     case 0:
-                        data[canvas_id].model.hover++;
+                        data[canvas_id].hover++;
                     case 1:
-                        this.caller_hover(this.caller_hover_args);
-                        data[canvas_id].model.hover++;
-                        break;
+                        if(this.caller_hover) {
+                            if(this.caller_hover_args){
+                                this.caller_hover(this.caller_hover_args);
+                            } else this.caller_hover();
+                        }
                     default: 
-                       data[canvas_id].model.hover++;
+                       data[canvas_id].hover++;
                        break;
                 }    
              })
-             if(data[canvas_id].intersects.length==0)data[canvas_id].model.hover = 0;
+             data[canvas_id].intersects = [];           
+            */ 
         })
         data[canvas_id].canvas.addEventListener('click', (e) => {
           data[canvas_id].intersects.forEach((hit) => {
-            console.log("button in canvas ",canvas_id," pressed\n"); 
             if(this.caller_click){
                 if(this.caller_click_args){
                     this.caller_click(this.caller_click_args);
@@ -103,8 +115,10 @@ export class Button {
         let rotation_x = this.rotation_x;
         let rotation_y = this.rotation_y;
         let rotation_z = this.rotation_z;
+        let color = this.color;
         let text = this.text;
         let text_size = this.text_size;
+        let text_color = this.text_color;
         //load models 
         let dracoLoader = new DRACOLoader();
 		      dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
@@ -113,13 +127,20 @@ export class Button {
 		      loader.load( 'https://bazylevnik0.github.io/3Delements-source/models/button.glb', function ( gltf ) {
 				    data[canvas_id].model = gltf.scene;
 				    data[canvas_id].model.position.set( 0, 0, 0 );
-				    if(width && height && depth){
-				      data[canvas_id].model.scale.set( 1*height, 1*depth, 1*width );
+				    if(width || height || depth){
+				        if(width) data[canvas_id].model.scale.x = 1*height;
+				        if(height)data[canvas_id].model.scale.y = 1*depth;
+				        if(depth) data[canvas_id].model.scale.z = 1*width;
+				    } else {
+				        if(width) data[canvas_id].model.scale.set(1,1,1);
 				    }
-				    if(rotation_x && rotation_y && rotation_z){
+				    if(rotation_x || rotation_y || rotation_z){
+				        if(rotation_x)data[canvas_id].model.rotation.x = 0+rotation_x;
+				        if(rotation_y)data[canvas_id].model.rotation.y = -1*Math.PI/2+rotation_y;
+				        if(rotation_z)data[canvas_id].model.rotation.z = 0+rotation_z;
+				    } else {
 				        data[canvas_id].model.rotation.set(0+rotation_x, -1*Math.PI/2+rotation_y, 0+rotation_z);
 				    }
-				    data[canvas_id].model.hover = 0;
 				    data[canvas_id].scene.add( data[canvas_id].model );
 				    data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
 				    data[canvas_id].animations = gltf.animations;
@@ -131,10 +152,14 @@ export class Button {
                     data[canvas_id].canvas_text.canvas.width  = data[canvas_id].canvas.width*width;
                     data[canvas_id].canvas_text.canvas.height = data[canvas_id].canvas.height*height;
                     
-                    data[canvas_id].canvas_text.fillStyle = "gray";
+                    if(color){
+                        data[canvas_id].canvas_text.fillStyle = color;
+                    } else data[canvas_id].canvas_text.fillStyle = "gray";
                     data[canvas_id].canvas_text.fillRect(0, 0, data[canvas_id].canvas_text.canvas.width, data[canvas_id].canvas_text.canvas.height);
                     data[canvas_id].canvas_text.font = 'Bold '+text_size+'px Arial';
-                    data[canvas_id].canvas_text.fillStyle = 'white';
+                    if(text_color){
+                        data[canvas_id].canvas_text.fillStyle = text_color;
+                    } else data[canvas_id].canvas_text.fillStyle = "white";
                     //data[canvas_id].canvas_text.fillText(text, 225, 150);
                       data[canvas_id].canvas_text.fillText(text, 10, data[canvas_id].canvas_text.canvas.height/2+(height*10));
                     //canvas contents will be used for a texture
@@ -144,8 +169,7 @@ export class Button {
                     data[canvas_id].texture.rotation = Math.PI/2;
                     data[canvas_id].texture.repeat.set( 2,4 );
                     data[canvas_id].texture.offset = new THREE.Vector2( -0.05, 0 );
-                    
-                    document.body.appendChild(data[canvas_id].canvas_text.canvas);
+                    //document.body.appendChild(data[canvas_id].canvas_text.canvas);
                     
 				    //get all children inside gltf file
 	                data[canvas_id].model.traverse( function ( child ) {

@@ -1,16 +1,19 @@
 import * as Library from "./library.js"
 
-
 let user_function = function(user_vars){
-    console.log("user_function with user vars:",user_vars[0],user_vars[1]);
+    console.log("user_function with user vars:",user_vars[0]);
 }
 
 let button = {
     canvas_id: "canvas_1",
+    color: "#FF0000",
     text: "press",
     text_size: 120,
+    text_color: "#00FF00",
+    caller_click: user_function,
+    caller_click_args: ["caller_click"],
     caller_hover: user_function,
-    caller_hover_args: [1,2],
+    caller_hover_args: ["caller_hover"],
     width: 2,
     height: 1,
     depth: 1,
@@ -23,10 +26,10 @@ let button = {
 
 let button2 = {
     canvas_id: "canvas_2",
+    color: "pink",
     text: "press me",
     text_size: 10,
-    caller_hover: user_function,
-    caller_hover_args: [1,2],
+    text_color: "blue",
     width: 0.75,
     height: 0.5,
     depth: 0.25,
@@ -41,8 +44,6 @@ let button3 = {
     canvas_id: "canvas_3",
     text: "PRESS me plz!",
     text_size: 100,
-    caller_hover: user_function,
-    caller_hover_args: [1,2],
     width: 3,
     height: 1.5,
     depth: 1.5,
