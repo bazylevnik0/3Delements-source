@@ -1,19 +1,5 @@
-//27.04.23
+//28.04.23
 //things to do:
-//change camera to isometric - done
-//fix positions - done
-//fix bug with first element - done
-//fix bug when you resize canvas -done
-//add width/height/and all args -done
-//bug when canvas behind vertical border of screen - done
-//add text to button:
-    //add text texture - done
-    //fix rotation and positions - must be depend to button size done
-//add color of button, and maybe text color - done
-//need checks when only width but non height, when rotation_x but non rotation_y - done
-//when callers can be undefined - done
-//bug with user functions - done
-//bug with click near to object, *i think it something with object size, maybe i need clickbox for it
 //when text undefined - set default
 //when text_size undefined - set default
 //set related resolution, must be soft in all screens
@@ -52,7 +38,7 @@ export class Button {
         console.log("start create_3D_button in ", canvas_id,"...");
         
         data[canvas_id] = {};
-        prepare_WebGL_context(canvas_id);
+       prepare_WebGL_context(canvas_id);
         
         //set animation loop and handlers
         data[canvas_id].clock = new THREE.Clock();
@@ -65,9 +51,9 @@ export class Button {
         }
         let test = 0;
         data[canvas_id].canvas.addEventListener('pointermove', (e) => {
-            data[canvas_id].mouse.set((e.clientX - data[canvas_id].canvas.offsetLeft) / data[canvas_id].canvas.clientWidth * 2 - 1, (e.clientY - data[canvas_id].canvas.offsetTop) / data[canvas_id].canvas.clientHeight  * -2 + 1- document.scrollTop);            
+  data[canvas_id].mouse.set((e.clientX-data[canvas_id].canvas.offsetLeft)*(2/data[canvas_id].canvas.clientWidth)-1, (e.clientY-data[canvas_id].canvas.offsetTop+window.scrollY)*(2/data[canvas_id].canvas.clientHeight)-1);            
             data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
-            data[canvas_id].intersects = [...[1]]; 
+            data[canvas_id].intersects = []; 
             data[canvas_id].raycaster.intersectObject(data[canvas_id].model, true, data[canvas_id].intersects);
             if(data[canvas_id].intersects.length==0)data[canvas_id].hover=0;         
             data[canvas_id].intersects.forEach((hit) => {
@@ -89,32 +75,21 @@ export class Button {
              })
         })
         data[canvas_id].canvas.addEventListener('click', (e) => {
-          data[canvas_id].intersects.forEach((hit) => {
-            switch(data[canvas_id].click){
-                    case undefined:
-                        data[canvas_id].click = 0;
-                    case 0:
-                        data[canvas_id].click++;
-                    case 1:
-                        if(this.caller_click){
-                            if(this.caller_click_args){
-                                this.caller_click(this.caller_click_args);
-                            } else {   
-                                this.caller_click();
-                            }
-                        }      
-                    default: 
-                       if(data[canvas_id].click>=150)data[canvas_id].click=0;
-                       data[canvas_id].click++;
-                       break;
+           if(data[canvas_id].intersects.length==1){
+               if(this.caller_click){
+                                if(this.caller_click_args){
+                                    this.caller_click(this.caller_click_args);
+                                } else {   
+                                    this.caller_click();
+                                }
+                            } 
+               for (let i = 0; i < data[canvas_id].animations.length; i++) {   
+                    let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] ); 
+                        animation.reset();
+                        animation.setLoop( THREE.LoopOnce );
+                        animation.play(); 
+                }      
             }
-            for (let i = 0; i < data[canvas_id].animations.length; i++) {   
-                let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] ); 
-                    animation.reset();
-                    animation.setLoop( THREE.LoopOnce );
-                    animation.play(); 
-            }      
-          })
         })
         
         
