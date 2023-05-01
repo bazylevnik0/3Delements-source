@@ -1,11 +1,12 @@
-//28.04.23
+//1.05.23
 //things to do:
-//when text undefined - set default
-//when text_size undefined - set default
-//set related resolution, must be soft in all screens
-//handle resize events
-//multiline string supporting
-//beatify and clearify code
+//when text undefined - set default  -undefined -done
+//when text_size undefined - set default - done
+//set related resolution, must be soft in all screens -done
+//beatify and clearify code - done
+//create example in codepen
+//create documentation template
+//write documentation for button
 
 
 import * as THREE from 'three';
@@ -36,46 +37,52 @@ export class Button {
     this.init = function(){
         let canvas_id = this.canvas_id;
         console.log("start create_3D_button in ", canvas_id,"...");
-        
-        data[canvas_id] = {};
-       prepare_WebGL_context(canvas_id);
+        data[canvas_id] = {};               //create object for canvas in data
+        prepare_WebGL_context(canvas_id);   //prepare drawing context with common template for all apis
         
         //set animation loop and handlers
-        data[canvas_id].clock = new THREE.Clock();
+        data[canvas_id].clock = new THREE.Clock(); //time for animation
         data[canvas_id].camera.position.set(0,0,5);
+        //live rendering, calling in the end of this class
         data[canvas_id].animate = function () {
-            data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() );
+            data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() ); //update animations 
 
 	        requestAnimationFrame( data[canvas_id].animate );
 	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
         }
-        let test = 0;
+        //hover
         data[canvas_id].canvas.addEventListener('pointermove', (e) => {
+  //convert and store position of mouce in NDC format
   data[canvas_id].mouse.set((e.clientX-data[canvas_id].canvas.offsetLeft)*(2/data[canvas_id].canvas.clientWidth)-1, (e.clientY-data[canvas_id].canvas.offsetTop+window.scrollY)*(2/data[canvas_id].canvas.clientHeight)-1);            
-            data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera)
+            data[canvas_id].raycaster.setFromCamera(data[canvas_id].mouse, data[canvas_id].camera) 
             data[canvas_id].intersects = []; 
-            data[canvas_id].raycaster.intersectObject(data[canvas_id].model, true, data[canvas_id].intersects);
-            if(data[canvas_id].intersects.length==0)data[canvas_id].hover=0;         
+            data[canvas_id].raycaster.intersectObject(data[canvas_id].model, true, data[canvas_id].intersects); //store intersected objects(hovered objects)
+            //logic( in simple words: if object hovered but not have the hover indicator(undefined)- then set the indicator to 0  then set indicator to 1 for marking it like a first hover - and call user function, then while it is hovering just not paying attention for hovering, also when non hovered - refresh indicator)
+            if(data[canvas_id].intersects.length==0)data[canvas_id].hover=0;  //if object not hovered length of hovered objects = 0
             data[canvas_id].intersects.forEach((hit) => {
                 switch(data[canvas_id].hover){
                     case undefined:
-                        data[canvas_id].hover = 0;
+                        data[canvas_id].hover = 0; //if object not have indicator of hover
                     case 0:
                         data[canvas_id].hover++;
                     case 1:
+                        //call user function, only when first intersection(hovering)
                         if(this.caller_hover) {
                             if(this.caller_hover_args){
                                 this.caller_hover(this.caller_hover_args);
                             } else this.caller_hover();
                         }
                     default: 
-                       data[canvas_id].hover++;
+                       data[canvas_id].hover++; //not paying attention if non first hovering
                        break;
                 }
              })
         })
+        //click(depend from hover - handle object intersections when moving pointer)
         data[canvas_id].canvas.addEventListener('click', (e) => {
-           if(data[canvas_id].intersects.length==1){
+           //also if length = 1 then one object is hovered
+           if(data[canvas_id].intersects.length==1){ 
+               //call user function
                if(this.caller_click){
                                 if(this.caller_click_args){
                                     this.caller_click(this.caller_click_args);
@@ -83,6 +90,7 @@ export class Button {
                                     this.caller_click();
                                 }
                             } 
+               //launch model animation
                for (let i = 0; i < data[canvas_id].animations.length; i++) {   
                     let animation = data[canvas_id].mixer.clipAction( data[canvas_id].animations[ i ] ); 
                         animation.reset();
@@ -92,8 +100,8 @@ export class Button {
             }
         })
         
-        
-        
+        //load and set model 
+        //set local vars
         let width = this.width;
         let height = this.depth;
         let depth = this.height; //yep little mess, but model is not oriented now
@@ -104,21 +112,25 @@ export class Button {
         let text = this.text;
         let text_size = this.text_size;
         let text_color = this.text_color;
-        //load models 
+        //set loader for model
         let dracoLoader = new DRACOLoader();
 		      dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
         let loader = new GLTFLoader();
 		      loader.setDRACOLoader( dracoLoader );
+		      //load and set model from folder /models
 		      loader.load( 'https://bazylevnik0.github.io/3Delements-source/models/button.glb', function ( gltf ) {
 				    data[canvas_id].model = gltf.scene;
-				    data[canvas_id].model.position.set( 0, 0, 0 );
+				    data[canvas_id].model.position.set( 0, 0, 0 ); //set position to 0
+				    //set size, when some parameters undefined just ignore
 				    if(width || height || depth){
 				        if(width) data[canvas_id].model.scale.x = 1*height;
 				        if(height)data[canvas_id].model.scale.y = 1*depth;
 				        if(depth) data[canvas_id].model.scale.z = 1*width;
 				    } else {
+				        //if all parameter undefined set default
 				        if(width) data[canvas_id].model.scale.set(1,1,1);
 				    }
+				    //set rotation, also same logic as in size setting
 				    if(rotation_x || rotation_y || rotation_z){
 				        if(rotation_x)data[canvas_id].model.rotation.x = 0+rotation_x;
 				        if(rotation_y)data[canvas_id].model.rotation.y = -1*Math.PI/2+rotation_y;
@@ -126,36 +138,41 @@ export class Button {
 				    } else {
 				        data[canvas_id].model.rotation.set(0+rotation_x, -1*Math.PI/2+rotation_y, 0+rotation_z);
 				    }
-				    data[canvas_id].scene.add( data[canvas_id].model );
+				    data[canvas_id].scene.add( data[canvas_id].model ); //add to scene
 				    data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
-				    data[canvas_id].animations = gltf.animations;
+				    data[canvas_id].animations = gltf.animations; //store animation in global data
 				    
 				    
 				    //add text
-				    //create image
+				    //create canvas with text 
 				    data[canvas_id].canvas_text = document.createElement('canvas').getContext('2d');
                     data[canvas_id].canvas_text.canvas.width  = data[canvas_id].canvas.width*width;
                     data[canvas_id].canvas_text.canvas.height = data[canvas_id].canvas.height*height;
                     
+                    //set color of background of button(in this case it is color of canvas) - if default then gray
                     if(color){
                         data[canvas_id].canvas_text.fillStyle = color;
                     } else data[canvas_id].canvas_text.fillStyle = "gray";
+                    //draw background
                     data[canvas_id].canvas_text.fillRect(0, 0, data[canvas_id].canvas_text.canvas.width, data[canvas_id].canvas_text.canvas.height);
+                    //set size of text, if undefined then 12
+                    if(text_size==undefined)text_size = 12;
                     data[canvas_id].canvas_text.font = 'Bold '+text_size+'px Arial';
+                    //set color of text, if undefined then white
                     if(text_color){
                         data[canvas_id].canvas_text.fillStyle = text_color;
                     } else data[canvas_id].canvas_text.fillStyle = "white";
-                    //data[canvas_id].canvas_text.fillText(text, 225, 150);
-                      data[canvas_id].canvas_text.fillText(text, 10, data[canvas_id].canvas_text.canvas.height/2+(height*10));
+                    //draw text, if text is undefined then use just a clear string
+                    if(text==undefined)text = "";
+                    data[canvas_id].canvas_text.fillText(text, 10, data[canvas_id].canvas_text.canvas.height/2+(height*10));
                     //canvas contents will be used for a texture
                     data[canvas_id].texture = new THREE.CanvasTexture(data[canvas_id].canvas_text.canvas) 
                     data[canvas_id].texture.flipY = false;
                     data[canvas_id].texture.center = new THREE.Vector2( 0.5, 0.5 ); 
-                    data[canvas_id].texture.rotation = Math.PI/2;
-                    data[canvas_id].texture.repeat.set( 2,4 );
-                    data[canvas_id].texture.offset = new THREE.Vector2( -0.05, 0 );
-                    //document.body.appendChild(data[canvas_id].canvas_text.canvas);
-                    
+                    data[canvas_id].texture.rotation = Math.PI/2;  //rotate canvas content for mapping in model
+                    data[canvas_id].texture.repeat.set( 2,4 );     //some magic number for correct position of text in model
+                    data[canvas_id].texture.offset = new THREE.Vector2( -0.05, 0 ); //same magic numbers
+                    //set texture as the material in model  
 				    //get all children inside gltf file
 	                data[canvas_id].model.traverse( function ( child ) {
 		                //get the meshes
@@ -167,7 +184,7 @@ export class Button {
 			            }
 	                })
 	        
-	                data[canvas_id].animate();
+	                data[canvas_id].animate(); //launch live rendering
 			    }, undefined, function ( e ) {  
 				    console.error( e );
 			    } );
@@ -189,11 +206,12 @@ export class Button {
 export function prepare_WebGL_context(canvas_id,library="three.js"){
     console.log("start prepare_WebGL_context for ",canvas_id,"...");
     
+    //create canvas, scene, camera, renderer, raycaster, mouse for api and store it in data with name of canvas id
     data[canvas_id].canvas = document.getElementById(canvas_id);
     data[canvas_id].scene  = new THREE.Scene();
     data[canvas_id].camera = new THREE.OrthographicCamera( data[canvas_id].canvas.width/75 / - 2, data[canvas_id].canvas.width/75 / 2, data[canvas_id].canvas.height/75 / 2, data[canvas_id].canvas.height/75 / - 2, -10, 1000 );
     //data[canvas_id].camera   = new THREE.PerspectiveCamera( 75, data[canvas_id].canvas.width / data[canvas_id].canvas.height, 0.1, 1000 );
-    data[canvas_id].renderer = new THREE.WebGLRenderer( { canvas: data[canvas_id].canvas, alpha: true } );
+    data[canvas_id].renderer = new THREE.WebGLRenderer( { canvas: data[canvas_id].canvas, alpha: true,antialias: true } );
    
     data[canvas_id].raycaster = new THREE.Raycaster();
     data[canvas_id].mouse = new THREE.Vector2()
