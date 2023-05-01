@@ -122,22 +122,16 @@ export class Button {
 				    data[canvas_id].model = gltf.scene;
 				    data[canvas_id].model.position.set( 0, 0, 0 ); //set position to 0
 				    //set size, when some parameters undefined just ignore
-				    if(width || height || depth){
-				        if(width) data[canvas_id].model.scale.x = 1*height;
-				        if(height)data[canvas_id].model.scale.y = 1*depth;
-				        if(depth) data[canvas_id].model.scale.z = 1*width;
-				    } else {
-				        //if all parameter undefined set default
-				        if(width) data[canvas_id].model.scale.set(1,1,1);
-				    }
+				    width?width=width:width=1;
+				    height?height=height:height=1;
+				    depth?depth=depth:depth=1;
+				    data[canvas_id].model.scale.set(depth,height,width);
 				    //set rotation, also same logic as in size setting
-				    if(rotation_x || rotation_y || rotation_z){
-				        if(rotation_x)data[canvas_id].model.rotation.x = 0+rotation_x;
-				        if(rotation_y)data[canvas_id].model.rotation.y = -1*Math.PI/2+rotation_y;
-				        if(rotation_z)data[canvas_id].model.rotation.z = 0+rotation_z;
-				    } else {
-				        data[canvas_id].model.rotation.set(0+rotation_x, -1*Math.PI/2+rotation_y, 0+rotation_z);
-				    }
+				    rotation_x?rotation_x=rotation_x:rotation_x=0;
+                    rotation_y?rotation_y=rotation_y:rotation_y=0;
+                    rotation_z?rotation_z=rotation_z:rotation_z=0;
+				    data[canvas_id].model.rotation.set(0+rotation_x, -1*Math.PI/2+rotation_y, 0+rotation_z);
+				    
 				    data[canvas_id].scene.add( data[canvas_id].model ); //add to scene
 				    data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
 				    data[canvas_id].animations = gltf.animations; //store animation in global data
@@ -218,4 +212,5 @@ export function prepare_WebGL_context(canvas_id,library="three.js"){
     
     console.log("...end prepare_WebGL_context for ",canvas_id);
 }
+
 

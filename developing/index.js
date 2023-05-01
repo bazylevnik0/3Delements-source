@@ -12,8 +12,6 @@ let button = {
     caller_hover: user_function,
     caller_hover_args: ["caller_hover"],
     width: 1.6,
-    height: 0.8,
-    depth: 0.4,
     rotation_x: 0.1,
     rotation_y: 0.3,
     rotation_z: 0.0001,
