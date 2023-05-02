@@ -30,6 +30,7 @@ export class Button {
     this.rotation_x         = button.rotation_x;
     this.rotation_y         = button.rotation_y;
     this.rotation_z         = button.rotation_z;
+    this.hover = 0;
     this.init = function(){
         let canvas_id = this.canvas_id;
         console.log("start create_3D_button in ", canvas_id,"...");
@@ -55,7 +56,6 @@ export class Button {
             data[canvas_id].raycaster.intersectObject(data[canvas_id].model, true, data[canvas_id].intersects); //store intersected objects(hovered objects)
             //logic( in simple words: if object hovered but not have the hover indicator(undefined)- then set the indicator to 0  then set indicator to 1 for marking it like a first hover - and call user function, then while it is hovering just not paying attention for hovering, also when non hovered - refresh indicator)
             if(data[canvas_id].intersects.length==0)this.hover=0;  //if object not hovered length of hovered objects = 0
-            console.log(this.hover)
             data[canvas_id].intersects.forEach((hit) => {
                 switch(this.hover){
                     case undefined:
