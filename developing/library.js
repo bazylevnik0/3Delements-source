@@ -1,9 +1,5 @@
-//1.05.23
+//2.05.23
 //things to do:
-//when text undefined - set default  -undefined -done
-//when text_size undefined - set default - done
-//set related resolution, must be soft in all screens -done
-//beatify and clearify code - done
 //create example in codepen
 //create documentation template
 //write documentation for button
@@ -58,13 +54,14 @@ export class Button {
             data[canvas_id].intersects = []; 
             data[canvas_id].raycaster.intersectObject(data[canvas_id].model, true, data[canvas_id].intersects); //store intersected objects(hovered objects)
             //logic( in simple words: if object hovered but not have the hover indicator(undefined)- then set the indicator to 0  then set indicator to 1 for marking it like a first hover - and call user function, then while it is hovering just not paying attention for hovering, also when non hovered - refresh indicator)
-            if(data[canvas_id].intersects.length==0)data[canvas_id].hover=0;  //if object not hovered length of hovered objects = 0
+            if(data[canvas_id].intersects.length==0)this.hover=0;  //if object not hovered length of hovered objects = 0
+            console.log(this.hover)
             data[canvas_id].intersects.forEach((hit) => {
-                switch(data[canvas_id].hover){
+                switch(this.hover){
                     case undefined:
-                        data[canvas_id].hover = 0; //if object not have indicator of hover
+                        this.hover = 0; //if object not have indicator of hover
                     case 0:
-                        data[canvas_id].hover++;
+                        this.hover++;
                     case 1:
                         //call user function, only when first intersection(hovering)
                         if(this.caller_hover) {
@@ -73,7 +70,7 @@ export class Button {
                             } else this.caller_hover();
                         }
                     default: 
-                       data[canvas_id].hover++; //not paying attention if non first hovering
+                       this.hover++; //not paying attention if non first hovering
                        break;
                 }
              })
