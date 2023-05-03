@@ -1,10 +1,3 @@
-//2.05.23
-//things to do:
-//create example in codepen
-//create documentation template
-//write documentation for button
-
-
 import * as THREE from 'three';
 
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -13,6 +6,53 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 export var data = {};
 
 //api
+export class Graph {
+  constructor(graph) {
+    this.canvas_id = graph.canvas_id;
+    this.type      = graph.type;
+    this.title_x   = graph.title_x;
+    this.title_y   = graph.title_y;
+    this.data      = graph.data;
+    this.groups    = graph.groups;
+    this.init      = function(){
+        let canvas_id = this.canvas_id;
+        console.log("start create_3D_graph in ", canvas_id,"...");
+        data[canvas_id] = {};               //create object in data
+        prepare_WebGL_context(canvas_id);   //prepare drawing context with common template for all apis
+        
+        data[canvas_id].camera.position.set(0,0,5);
+        //live rendering, calling in the end of this class
+        data[canvas_id].animate = function () {
+	        requestAnimationFrame( data[canvas_id].animate );
+	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
+        }
+        
+        //calculate and load
+        if(this.type == "bar"){
+            console.log("bar");
+        } else if(this.type == "line"){
+            console.log("line");
+        } else {
+            this.type = "bar";
+            console.log("type is not set - reinit with default type 'bar'");
+            this.init(); //reinit
+            return 0;    //finish the failure init
+        }
+        
+        data[canvas_id].animate(); //launch live rendering
+        
+        //add light
+        data[canvas_id].ambientLight = new THREE.AmbientLight()
+        data[canvas_id].ambientLight.intensity = 0.2;
+        data[canvas_id].pointLight = new THREE.PointLight()
+        data[canvas_id].pointLight.position.set(10, 10, 10)
+        data[canvas_id].scene.add(data[canvas_id].ambientLight)
+        data[canvas_id].scene.add(data[canvas_id].pointLight)
+        
+        console.log("...end create_3D_graph in ",canvas_id);     
+    }
+  }
+}
 export class Button {
   constructor(button) {
     this.canvas_id          = button.canvas_id;
