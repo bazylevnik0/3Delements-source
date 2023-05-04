@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-			
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';        //need for button
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';      //need for button
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; //need for graph
+
 export var data = {};
 
 //api
@@ -24,20 +25,92 @@ export class Graph {
         //live rendering, calling in the end of this class
         data[canvas_id].animate = function () {
 	        requestAnimationFrame( data[canvas_id].animate );
+	        
+	        data[canvas_id].controls.update();
 	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
         }
         
         //calculate and load
+        //load plane with with axes
+        
+        //temporary:
+        //plane
+        const geometry_temp1 = new THREE.PlaneGeometry( 5, 2.5 );
+const material_temp1 = new THREE.MeshBasicMaterial( {color: 0xf4f4f4, side: THREE.DoubleSide} );
+const plane_temp1 = new THREE.Mesh( geometry_temp1, material_temp1 );
+plane_temp1.position.set(0,-1,0);
+plane_temp1.rotation.set(Math.PI/2,0,0);
+data[canvas_id].scene.add( plane_temp1 );
+        //x axis 
+        const geometry_temp2 = new THREE.BoxGeometry( 0.025, 2, 0.025 ); 
+    const material_temp2 = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
+    const cube_temp2 = new THREE.Mesh( geometry_temp2, material_temp2 ); 
+    cube_temp2.position.set(-2.5,0,1.25);
+    data[canvas_id].scene.add( cube_temp2 );
+    //label
+       var canvas_temp2 = document.createElement('canvas');
+           canvas_temp2.width = 100;
+           canvas_temp2.height = 100;
+        var context_temp2 = canvas_temp2.getContext('2d');
+        context_temp2.font = "Bold 20px Arial";
+      
+        context_temp2.fillStyle = "rgb(0,0,0,0.0)";
+        context_temp2.fillRect(0, 0, canvas_temp2.width, canvas_temp2.height);
+        context_temp2.fillStyle = "red";
+        context_temp2.fillText("x", canvas_temp2.width/2, canvas_temp2.height/2);
+        
+         var texture_temp2 = new THREE.Texture(canvas_temp2) 
+        texture_temp2.needsUpdate = true;
+        var spriteMaterial_temp2 = new THREE.SpriteMaterial( { map: texture_temp2 } );
+        var sprite_temp2 = new THREE.Sprite( spriteMaterial_temp2 );
+            sprite_temp2.position.set(2.5,-1,1.25);
+        data[canvas_id].scene.add(sprite_temp2)
+
+    //y axis 
+        const geometry_temp3 = new THREE.BoxGeometry( 5, 0.025, 0.025 ); 
+    const material_temp3 = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
+    const cube_temp3 = new THREE.Mesh( geometry_temp3, material_temp3 ); 
+    cube_temp3.position.set(0,-1,1.25);
+    data[canvas_id].scene.add( cube_temp3 );
+        //label
+       var canvas_temp1 = document.createElement('canvas');
+           canvas_temp1.width = 100;
+           canvas_temp1.height = 100;
+        var context_temp1 = canvas_temp1.getContext('2d');
+        context_temp1.font = "Bold 20px Arial";
+      
+        context_temp1.fillStyle = "rgb(0,0,0,0.0)";
+        context_temp1.fillRect(0, 0, canvas_temp1.width, canvas_temp1.height);
+        context_temp1.fillStyle = "red";
+        context_temp1.fillText("y", canvas_temp1.width/2, canvas_temp1.height/2);
+        
+         var texture_temp1 = new THREE.Texture(canvas_temp1) 
+        texture_temp1.needsUpdate = true;
+        var spriteMaterial_temp1 = new THREE.SpriteMaterial( { map: texture_temp1 } );
+        var sprite_temp1 = new THREE.Sprite( spriteMaterial_temp1 );
+            sprite_temp1.position.set(-2.5,1,1.25);
+        data[canvas_id].scene.add(sprite_temp1)
+        //
+
+        if(!this.type)this.type="bar";
         if(this.type == "bar"){
             console.log("bar");
-        } else if(this.type == "line"){
+        } 
+        if(this.type == "line"){
             console.log("line");
-        } else {
-            this.type = "bar";
-            console.log("type is not set - reinit with default type 'bar'");
-            this.init(); //reinit
-            return 0;    //finish the failure init
-        }
+        } 
+        
+        //add controls
+        // controls
+
+				data[canvas_id].controls = new OrbitControls( data[canvas_id].camera, data[canvas_id].renderer.domElement );
+				data[canvas_id].controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+				data[canvas_id].controls.dampingFactor = 0.05;
+				data[canvas_id].controls.screenSpacePanning = false;
+				data[canvas_id].controls.minDistance = 100;
+				data[canvas_id].controls.maxDistance = 500;
+				data[canvas_id].controls.maxPolarAngle = Math.PI / 2;
+				
         
         data[canvas_id].animate(); //launch live rendering
         
