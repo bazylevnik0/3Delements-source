@@ -11,9 +11,9 @@ export class Graph {
   constructor(graph) {
     this.canvas_id = graph.canvas_id;
     this.type      = graph.type;
-    this.title_x   = graph.title_x;
-    this.title_y   = graph.title_y;
-    this.data      = graph.data;
+    this.label_x   = graph.label_x;
+    this.label_y   = graph.label_y;
+    this.input     = graph.data;
     this.groups    = graph.groups;
     this.init      = function(){
         let canvas_id = this.canvas_id;
@@ -29,69 +29,104 @@ export class Graph {
 	        data[canvas_id].controls.update();
 	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
         }
+        //temporary:
+        //analyze input
+        let input_width;
+        let input_height;
+        let max_value;
+        let min_value;
+
+        if(this.input){
+            if(Array.isArray(this.input)){
+                console.log("input is array");
+            } else {
+                console.log("analyzing input");
+                let values = Object.values(this.input)
+                //height and width
+                input_height = 1;
+                input_width = values.length;
+                console.log(input_width);
+                //max_value and min_value
+                max_value = Math.max(values);
+                min_value = Math.min(values);
+                
+            }
+        } else {
+            console.log("empty input");
+        }
         
         //calculate and load
         //load plane with with axes
         
         //temporary:
         //plane
-        const geometry_temp1 = new THREE.PlaneGeometry( 5, 2.5 );
-const material_temp1 = new THREE.MeshBasicMaterial( {color: 0xf4f4f4, side: THREE.DoubleSide} );
-const plane_temp1 = new THREE.Mesh( geometry_temp1, material_temp1 );
-plane_temp1.position.set(0,-1,0);
-plane_temp1.rotation.set(Math.PI/2,0,0);
-data[canvas_id].scene.add( plane_temp1 );
-        //x axis 
-        const geometry_temp2 = new THREE.BoxGeometry( 0.025, 2, 0.025 ); 
-    const material_temp2 = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
-    const cube_temp2 = new THREE.Mesh( geometry_temp2, material_temp2 ); 
-    cube_temp2.position.set(-2.5,0,1.25);
-    data[canvas_id].scene.add( cube_temp2 );
-    //label
-       var canvas_temp2 = document.createElement('canvas');
-           canvas_temp2.width = 100;
-           canvas_temp2.height = 100;
-        var context_temp2 = canvas_temp2.getContext('2d');
-        context_temp2.font = "Bold 20px Arial";
-      
-        context_temp2.fillStyle = "rgb(0,0,0,0.0)";
-        context_temp2.fillRect(0, 0, canvas_temp2.width, canvas_temp2.height);
-        context_temp2.fillStyle = "red";
-        context_temp2.fillText("x", canvas_temp2.width/2, canvas_temp2.height/2);
-        
-         var texture_temp2 = new THREE.Texture(canvas_temp2) 
-        texture_temp2.needsUpdate = true;
-        var spriteMaterial_temp2 = new THREE.SpriteMaterial( { map: texture_temp2 } );
-        var sprite_temp2 = new THREE.Sprite( spriteMaterial_temp2 );
-            sprite_temp2.position.set(2.5,-1,1.25);
-        data[canvas_id].scene.add(sprite_temp2)
-
-    //y axis 
-        const geometry_temp3 = new THREE.BoxGeometry( 5, 0.025, 0.025 ); 
-    const material_temp3 = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
-    const cube_temp3 = new THREE.Mesh( geometry_temp3, material_temp3 ); 
-    cube_temp3.position.set(0,-1,1.25);
-    data[canvas_id].scene.add( cube_temp3 );
+        let geometry_plane  = new THREE.PlaneGeometry( input_width, input_height );
+        let material_plane  = new THREE.MeshBasicMaterial( {color: 0xf4f4f4, side: THREE.DoubleSide} );
+        data[canvas_id].plane = new THREE.Mesh( geometry_plane, material_plane );
+        data[canvas_id].plane.position.set(0,-1,0);
+        data[canvas_id].plane.rotation.set(Math.PI/2,0,0);
+        data[canvas_id].scene.add(data[canvas_id].plane);
+    
+        //y 
+        //axis                                            
+        let geometry_axis_y    = new THREE.BoxGeometry( 0.025, 4, 0.025 ); 
+        let material_axis_y    = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
+        data[canvas_id].axis_y = new THREE.Mesh( geometry_axis_y, material_axis_y ); 
+        data[canvas_id].axis_y.position.set(-1*input_width/2,1,input_height/2);
+        data[canvas_id].scene.add( data[canvas_id].axis_y );
         //label
-       var canvas_temp1 = document.createElement('canvas');
-           canvas_temp1.width = 100;
-           canvas_temp1.height = 100;
-        var context_temp1 = canvas_temp1.getContext('2d');
-        context_temp1.font = "Bold 20px Arial";
+        let canvas_label_y = document.createElement('canvas');
+            canvas_label_y.width  = 300;
+            canvas_label_y.height = 300;
+        let context_label_y  = canvas_label_y.getContext('2d');
+        context_label_y.font = "Bold 40px Arial";
       
-        context_temp1.fillStyle = "rgb(0,0,0,0.0)";
-        context_temp1.fillRect(0, 0, canvas_temp1.width, canvas_temp1.height);
-        context_temp1.fillStyle = "red";
-        context_temp1.fillText("y", canvas_temp1.width/2, canvas_temp1.height/2);
+        context_label_y.fillStyle = "rgb(0,0,0,0.0)";
+        context_label_y.fillRect(0, 0, canvas_label_y.width  , canvas_label_y.height);
+        context_label_y.fillStyle = "red";
+        if(this.label_y){  
+            context_label_y.fillText(""+this.label_y, canvas_label_y.width/2, canvas_label_y.height/2);
+        } else {
+            context_label_y.fillText("y" , canvas_label_y.width/2, canvas_label_y.height/2);
+        }
+        let texture_label_y = new THREE.Texture(canvas_label_y) 
+        texture_label_y.needsUpdate  = true;
+        let sprite_material_label_y  = new THREE.SpriteMaterial( { map: texture_label_y } );
+            data[canvas_id].label_y  = new THREE.Sprite( sprite_material_label_y );
+            data[canvas_id].label_y.position.set(-1*input_width/2,3+0.05,input_height/2);
+            data[canvas_id].scene.add(data[canvas_id].label_y);
+    
+        //x 
+        //axis                                            
+        let geometry_axis_x    = new THREE.BoxGeometry( input_width, 0.025, 0.025 ); 
+        let material_axis_x    = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
+        data[canvas_id].axis_x = new THREE.Mesh( geometry_axis_x, material_axis_x ); 
+        data[canvas_id].axis_x.position.set(0,-1,input_height/2);
+        data[canvas_id].scene.add( data[canvas_id].axis_x );
+        //label
+        let canvas_label_x = document.createElement('canvas');
+            canvas_label_x.width  = 300;
+            canvas_label_x.height = 300;
+        let context_label_x  = canvas_label_x.getContext('2d');
+        context_label_x.font = "Bold 40px Arial";
+      
+        context_label_x.fillStyle = "rgb(0,0,0,0.0)";
+        context_label_x.fillRect(0, 0, canvas_label_x.width  , canvas_label_x.height);
+        context_label_x.fillStyle = "red";
+        if(this.label_x){  
+            context_label_x.fillText(""+this.label_x, canvas_label_x.width/2, canvas_label_x.height/2);
+        } else {
+            context_label_x.fillText("x" , canvas_label_x.width/2, canvas_label_x.height/2);
+        }
+        let texture_label_x = new THREE.Texture(canvas_label_x) 
+        texture_label_x.needsUpdate  = true;
+        let sprite_material_label_x  = new THREE.SpriteMaterial( { map: texture_label_x } );
+            data[canvas_id].label_x  = new THREE.Sprite( sprite_material_label_x );
+            data[canvas_id].label_x.position.set(input_width/2+0.05,-1,input_height/2);
+            data[canvas_id].scene.add(data[canvas_id].label_x);
+    
         
-         var texture_temp1 = new THREE.Texture(canvas_temp1) 
-        texture_temp1.needsUpdate = true;
-        var spriteMaterial_temp1 = new THREE.SpriteMaterial( { map: texture_temp1 } );
-        var sprite_temp1 = new THREE.Sprite( spriteMaterial_temp1 );
-            sprite_temp1.position.set(-2.5,1,1.25);
-        data[canvas_id].scene.add(sprite_temp1)
-        //
-
+        //vizualize input
         if(!this.type)this.type="bar";
         if(this.type == "bar"){
             console.log("bar");
