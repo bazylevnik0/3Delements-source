@@ -20,8 +20,8 @@ export class Graph {
         console.log("start create_3D_graph in ", canvas_id,"...");
         data[canvas_id] = {};               //create object in data
         prepare_WebGL_context(canvas_id);   //prepare drawing context with common template for all apis
-        
-        data[canvas_id].camera.position.set(0,0,5);
+    
+        data[canvas_id].camera.position.set(0,0,1);
         //live rendering, calling in the end of this class
         data[canvas_id].animate = function () {
 	        requestAnimationFrame( data[canvas_id].animate );
@@ -45,11 +45,9 @@ export class Graph {
                 //height and width
                 input_height = 1;
                 input_width = values.length;
-                console.log(input_width);
                 //max_value and min_value
-                max_value = Math.max(values);
-                min_value = Math.min(values);
-                
+                max_value = Math.max(...values);
+                min_value = Math.min(...values);
             }
         } else {
             console.log("empty input");
@@ -60,19 +58,19 @@ export class Graph {
         
         //temporary:
         //plane
-        let geometry_plane  = new THREE.PlaneGeometry( input_width, input_height );
-        let material_plane  = new THREE.MeshBasicMaterial( {color: 0xf4f4f4, side: THREE.DoubleSide} );
+        let geometry_plane    = new THREE.PlaneGeometry( input_width, input_height );
+        let material_plane    = new THREE.MeshBasicMaterial( {color: 0xf4f4f4, side: THREE.DoubleSide} );
         data[canvas_id].plane = new THREE.Mesh( geometry_plane, material_plane );
-        data[canvas_id].plane.position.set(0,-1,0);
+        data[canvas_id].plane.position.set(0,-2.5,0);
         data[canvas_id].plane.rotation.set(Math.PI/2,0,0);
         data[canvas_id].scene.add(data[canvas_id].plane);
     
         //y 
         //axis                                            
-        let geometry_axis_y    = new THREE.BoxGeometry( 0.025, 4, 0.025 ); 
+        let geometry_axis_y    = new THREE.BoxGeometry( 0.025, 5, 0.025 ); 
         let material_axis_y    = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
         data[canvas_id].axis_y = new THREE.Mesh( geometry_axis_y, material_axis_y ); 
-        data[canvas_id].axis_y.position.set(-1*input_width/2,1,input_height/2);
+        data[canvas_id].axis_y.position.set(-1*input_width/2,0,input_height/2);
         data[canvas_id].scene.add( data[canvas_id].axis_y );
         //label
         let canvas_label_y = document.createElement('canvas');
@@ -82,7 +80,7 @@ export class Graph {
         context_label_y.font = "Bold 40px Arial";
       
         context_label_y.fillStyle = "rgb(0,0,0,0.0)";
-        context_label_y.fillRect(0, 0, canvas_label_y.width  , canvas_label_y.height);
+        context_label_y.fillRect(0, 0, canvas_label_y.width, canvas_label_y.height);
         context_label_y.fillStyle = "red";
         if(this.label_y){  
             context_label_y.fillText(""+this.label_y, canvas_label_y.width/2, canvas_label_y.height/2);
@@ -93,7 +91,7 @@ export class Graph {
         texture_label_y.needsUpdate  = true;
         let sprite_material_label_y  = new THREE.SpriteMaterial( { map: texture_label_y } );
             data[canvas_id].label_y  = new THREE.Sprite( sprite_material_label_y );
-            data[canvas_id].label_y.position.set(-1*input_width/2,3+0.05,input_height/2);
+            data[canvas_id].label_y.position.set(-1*input_width/2,2.55,input_height/2);
             data[canvas_id].scene.add(data[canvas_id].label_y);
     
         //x 
@@ -101,7 +99,7 @@ export class Graph {
         let geometry_axis_x    = new THREE.BoxGeometry( input_width, 0.025, 0.025 ); 
         let material_axis_x    = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
         data[canvas_id].axis_x = new THREE.Mesh( geometry_axis_x, material_axis_x ); 
-        data[canvas_id].axis_x.position.set(0,-1,input_height/2);
+        data[canvas_id].axis_x.position.set(0,-2.5,input_height/2);
         data[canvas_id].scene.add( data[canvas_id].axis_x );
         //label
         let canvas_label_x = document.createElement('canvas');
@@ -122,17 +120,40 @@ export class Graph {
         texture_label_x.needsUpdate  = true;
         let sprite_material_label_x  = new THREE.SpriteMaterial( { map: texture_label_x } );
             data[canvas_id].label_x  = new THREE.Sprite( sprite_material_label_x );
-            data[canvas_id].label_x.position.set(input_width/2+0.05,-1,input_height/2);
-            data[canvas_id].scene.add(data[canvas_id].label_x);
-    
+            data[canvas_id].label_x.position.set(input_width/2+0.05,-2.5,input_height/2);
+            data[canvas_id].scene.add(data[canvas_id].label_x); 
         
         //vizualize input
         if(!this.type)this.type="bar";
         if(this.type == "bar"){
             console.log("bar");
+            data[canvas_id].bars = [];
+            let temp_values = Object.values(this.input)
+            console.log(temp_values)
+            let delta = max_value - min_value;
+            let koef  = 4/delta;
+            for(let i = 0; i < input_width; i++){
+                let geometry = new THREE.BoxGeometry( 1, temp_values[i]*koef, 1 ); 
+                let material = new THREE.MeshBasicMaterial( {color: 0x0000ff} ); 
+                data[canvas_id].bars[i] = new THREE.Mesh( geometry, material ); 
+                data[canvas_id].bars[i].position.set(-1*input_width/2+i+0.5,temp_values[i]*koef/2-2.5,0);
+                data[canvas_id].scene.add( data[canvas_id].bars[i] );
+            }
         } 
         if(this.type == "line"){
             console.log("line");
+            data[canvas_id].points = [];
+            let temp_values = Object.values(this.input)
+            console.log(temp_values)
+            let delta = max_value - min_value;
+            let koef  = 4/delta;
+            for(let i = 0; i < input_width; i++){
+                data[canvas_id].points.push( new THREE.Vector3(-1*input_width/2+i+0.5,temp_values[i]*koef/2-2.5, 0 ) );
+            }
+            let geometry = new THREE.BufferGeometry().setFromPoints( data[canvas_id].points );
+            let material = new THREE.LineBasicMaterial( { color: 0x0000ff} );
+            data[canvas_id].line = new THREE.Line( geometry, material );
+            data[canvas_id].scene.add( data[canvas_id].line );
         } 
         
         //add controls
