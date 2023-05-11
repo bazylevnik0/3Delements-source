@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';        //need for button
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';      //need for button
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; //need for graph
+import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';      //need for button
+import { DRACOLoader }   from 'three/addons/loaders/DRACOLoader.js';     //need for button
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';  //need for graph
+import { FontLoader }    from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry }  from 'three/addons/geometries/TextGeometry.js'; //need for text
 
 export var data = {};
 
@@ -155,6 +157,27 @@ export class Graph {
             data[canvas_id].line = new THREE.Line( geometry, material );
             data[canvas_id].scene.add( data[canvas_id].line );
         } 
+        
+        //add values labels
+        const loader = new FontLoader();
+        loader.load( 'https://bazylevnik0.github.io/3Delements-source/fonts/open_sans_medium.json', function ( font ) {
+
+	        const geometry = new TextGeometry( 'Hello three.js!', {
+		        font: font,
+		        size: 80,
+		        height: 5,
+		        curveSegments: 12,
+		        bevelEnabled: true,
+		        bevelThickness: 10,
+		        bevelSize: 8,
+		        bevelOffset: 0,
+		        bevelSegments: 5
+	        } );
+	         const material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
+             data[canvas_id].text = new THREE.Mesh( geometry, material ); 
+             data[canvas_id].text.position.set(0,0,0);
+             data[canvas_id].scene.add( data[canvas_id].text );
+        } );
         
         //add controls
         // controls
@@ -317,6 +340,7 @@ export class Button {
                     data[canvas_id].canvas_text.fillRect(0, 0, data[canvas_id].canvas_text.canvas.width, data[canvas_id].canvas_text.canvas.height);
                     //set size of text, if undefined then 12
                     if(text_size==undefined)text_size = 12;
+                                                                            //change to open-sans
                     data[canvas_id].canvas_text.font = 'Bold '+text_size+'px Arial';
                     //set color of text, if undefined then white
                     if(text_color){
