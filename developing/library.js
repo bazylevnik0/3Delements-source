@@ -15,6 +15,7 @@ export class Graph {
     this.type      = graph.type;
     this.label_x   = graph.label_x;
     this.label_y   = graph.label_y;
+    this.label_val = graph.label_val;
     this.input     = graph.data;
     this.groups    = graph.groups;
     this.init      = function(){
@@ -126,6 +127,7 @@ export class Graph {
             data[canvas_id].scene.add(data[canvas_id].label_x); 
         
         //vizualize input
+        let koef;
         if(!this.type)this.type="bar";
         if(this.type == "bar"){
             console.log("bar");
@@ -148,7 +150,7 @@ export class Graph {
             let temp_values = Object.values(this.input)
             console.log(temp_values)
             let delta = max_value - min_value;
-            let koef  = 4/delta;
+                koef  = 4/delta;
             for(let i = 0; i < input_width; i++){
                 data[canvas_id].points.push( new THREE.Vector3(-1*input_width/2+i+0.5,temp_values[i]*koef/2-2.5, 0 ) );
             }
@@ -159,26 +161,56 @@ export class Graph {
         } 
         
         //add values labels
-        const loader = new FontLoader();
-        loader.load( 'https://bazylevnik0.github.io/3Delements-source/fonts/open_sans_medium.json', function ( font ) {
-
-	        const geometry = new TextGeometry( 'Hello three.js!', {
-		        font: font,
-		        size: 80,
-		        height: 5,
-		        curveSegments: 12,
-		        bevelEnabled: true,
-		        bevelThickness: 10,
-		        bevelSize: 8,
-		        bevelOffset: 0,
-		        bevelSegments: 5
-	        } );
-	         const material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
-             data[canvas_id].text = new THREE.Mesh( geometry, material ); 
-             data[canvas_id].text.position.set(0,0,0);
-             data[canvas_id].scene.add( data[canvas_id].text );
-        } );
-        
+        let input = this.input;
+        let type  = this.type;
+        if(this.label_val){
+            const loader = new FontLoader();
+            loader.load( 'https://bazylevnik0.github.io/3Delements-source/fonts/open_sans_medium.json', function ( font ) {
+                 data[canvas_id].texts = [];
+                 let temp_keys = Object.keys(input)
+                 //add keys labels
+                 let i;
+                 for(i = 0; i < input_width; i++){
+                     let geometry = new TextGeometry( temp_keys[i], {
+		                font: font,
+		                size: 1,
+		                height: 0,
+		                curveSegments: 6,
+	                 } );
+	                 let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
+                     data[canvas_id].texts[i] = new THREE.Mesh( geometry, material ); 
+                     if(type = "line") {
+                         data[canvas_id].texts[i].position.set(-1*input_width/2+0.5+i,-2.45,input_height/2);
+                         data[canvas_id].texts[i].rotation.set(-Math.PI/2,0,Math.PI/2);
+                     }
+                     data[canvas_id].texts[i].scale.set(0.2,0.2,0.2);
+                     data[canvas_id].scene.add( data[canvas_id].texts[i] );
+                 }
+                 //add values labels
+                 let temp_values_map = {};
+                 let values = Object.values(input)
+                 for(let j = 0; j < input_width; j++)temp_values_map[""+values[j]]=values[j];
+                 console.log(temp_values_map)
+                 Object.values(temp_values_map).map(el=>{
+                        console.log(el)
+                        let geometry = new TextGeometry( ""+el, {
+		                    font: font,
+		                    size: 1,
+		                    height: 0,
+		                    curveSegments: 6,
+	                         } );
+	                     let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
+                         data[canvas_id].texts[i] = new THREE.Mesh( geometry, material ); 
+                         if(type = "line") {
+                             data[canvas_id].texts[i].position.set(-1*input_width/2,el*koef/2-2.5,input_height/2);
+                             data[canvas_id].texts[i].rotation.set(0,0,0);
+                         }
+                         data[canvas_id].texts[i].scale.set(0.2,0.2,0.2);
+                         data[canvas_id].scene.add( data[canvas_id].texts[i] );
+                         i++;
+                 });
+            } );
+        }
         //add controls
         // controls
 
