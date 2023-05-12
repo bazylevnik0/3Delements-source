@@ -170,6 +170,22 @@ export class Graph {
                  let temp_keys = Object.keys(input)
                  //add keys labels
                  let i;
+                 //if type bar - need find key with max length(for align) and precalculate geometry for koef of align
+                 let abs_size = new THREE.Vector3();
+                 if(type=="bar"){
+                     let max_length = 0;
+                     for(let j = 0; j < temp_keys.length; j++)if(temp_keys[max_length].length<temp_keys[j].length)max_length=j;
+                     console.log(max_length);
+                     let geometry = new TextGeometry( temp_keys[max_length], {
+		                    font: font,
+		                    size: 1,
+		                    height: 0,
+		                    curveSegments: 6,
+	                     } );
+	                     geometry.computeBoundingBox();
+                         geometry.boundingBox.getSize(abs_size);
+	             }
+	             //draw keys
                  for(i = 0; i < input_width; i++){
                      let geometry = new TextGeometry( temp_keys[i], {
 		                font: font,
@@ -179,16 +195,48 @@ export class Graph {
 	                 } );
 	                 let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
                      data[canvas_id].texts[i] = new THREE.Mesh( geometry, material ); 
-                     if(type = "line") {
+                     if(type == "line") {
                          data[canvas_id].texts[i].position.set(-1*input_width/2+0.5+i,-2.45,input_height/2);
                          data[canvas_id].texts[i].rotation.set(-Math.PI/2,0,Math.PI/2);
                      }
-                     data[canvas_id].texts[i].scale.set(0.2,0.2,0.2);
+                     if(type == "bar") {
+                         geometry.computeBoundingBox()
+                         //geometry.center()
+                         console.log(geometry.boundingBox)
+                         let size = new THREE.Vector3();
+                         geometry.boundingBox.getSize(size);
+                         console.log(abs_size.x,size.x,abs_size.y,size.y)
+                         data[canvas_id].texts[i].position.set(-1*input_width/2+0.5+i,-2.45,input_height/2+abs_size.x*0.2+0.2-(abs_size.x-size.x)*0.2);
+                         data[canvas_id].texts[i].rotation.set(-Math.PI/2,0,Math.PI/2);
+                     }
+                     data[canvas_id].texts[i].scale.set(0.2,0.2,0.1);
                      data[canvas_id].scene.add( data[canvas_id].texts[i] );
                  }
                  //add values labels
                  let temp_values_map = {};
-                 let values = Object.values(input)
+                 let values = Object.values(input);
+                 values.sort();
+                 for(let j = 1; j < values.length-1; j++){
+                    if(values[j]-values[j-1]<10){ //!
+                        values.splice(j,1); j--;
+                    }
+                 }
+                 //if type bar - need find key with max length(for align) and precalculate geometry for koef of align
+                 abs_size = new THREE.Vector3();
+                 if(type=="bar"){
+                     let max_length = 0;
+                     for(let j = 0; j < values.length; j++)if(""+values[max_length].length<""+values[j].length)max_length=j;
+                     console.log(max_length);
+                     let geometry = new TextGeometry( values[max_length], {
+		                    font: font,
+		                    size: 1,
+		                    height: 0,
+		                    curveSegments: 6,
+	                     } );
+	                     geometry.computeBoundingBox();
+                         geometry.boundingBox.getSize(abs_size);
+	             }
+	             //draw values
                  for(let j = 0; j < input_width; j++)temp_values_map[""+values[j]]=values[j];
                  console.log(temp_values_map)
                  Object.values(temp_values_map).map(el=>{
@@ -201,11 +249,17 @@ export class Graph {
 	                         } );
 	                     let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
                          data[canvas_id].texts[i] = new THREE.Mesh( geometry, material ); 
-                         if(type = "line") {
+                         if(type == "line") {
                              data[canvas_id].texts[i].position.set(-1*input_width/2,el*koef/2-2.5,input_height/2);
                              data[canvas_id].texts[i].rotation.set(0,0,0);
                          }
-                         data[canvas_id].texts[i].scale.set(0.2,0.2,0.2);
+                         if(type == "bar") {
+                             data[canvas_id].texts[i].position.set(-1*input_width/2-1,el*koef/2-2.5,input_height/2);
+                           
+                             data[canvas_id].texts[i].rotation.set(0,0,0);
+                         }  
+                    
+                         data[canvas_id].texts[i].scale.set(0.1,0.1,0.1);
                          data[canvas_id].scene.add( data[canvas_id].texts[i] );
                          i++;
                  });
