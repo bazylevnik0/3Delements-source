@@ -20,6 +20,7 @@ export class Graph {
     this.groups    = graph.groups;
     this.init      = function(){
         let canvas_id = this.canvas_id;
+        let type = this.type;
         console.log("start create_3D_graph in ", canvas_id,"...");
         data[canvas_id] = {};               //create object in data
         prepare_WebGL_context(canvas_id);   //prepare drawing context with common template for all apis
@@ -135,7 +136,7 @@ export class Graph {
             let temp_values = Object.values(this.input)
             console.log(temp_values)
             let delta = max_value - min_value;
-            let koef  = 4/delta;
+                koef  = 4/delta;
             for(let i = 0; i < input_width; i++){
                 let geometry = new THREE.BoxGeometry( 1, temp_values[i]*koef, 1 ); 
                 let material = new THREE.MeshBasicMaterial( {color: 0x0000ff} ); 
@@ -162,7 +163,6 @@ export class Graph {
         
         //add values labels
         let input = this.input;
-        let type  = this.type;
         if(this.label_val){
             const loader = new FontLoader();
             loader.load( 'https://bazylevnik0.github.io/3Delements-source/fonts/open_sans_medium.json', function ( font ) {
@@ -241,24 +241,28 @@ export class Graph {
                  console.log(temp_values_map)
                  Object.values(temp_values_map).map(el=>{
                         console.log(el)
-                        let geometry = new TextGeometry( ""+el, {
+                         let geometry = new TextGeometry( ""+el, {
 		                    font: font,
 		                    size: 1,
 		                    height: 0,
 		                    curveSegments: 6,
-	                         } );
+	                     });
 	                     let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
                          data[canvas_id].texts[i] = new THREE.Mesh( geometry, material ); 
                          if(type == "line") {
                              data[canvas_id].texts[i].position.set(-1*input_width/2,el*koef/2-2.5,input_height/2);
                              data[canvas_id].texts[i].rotation.set(0,0,0);
                          }
-                         if(type == "bar") {
-                             data[canvas_id].texts[i].position.set(-1*input_width/2-1,el*koef/2-2.5,input_height/2);
-                           
+                         if(type == "bar" ) {
+                              geometry.computeBoundingBox()
+                             //geometry.center()
+                             console.log(geometry.boundingBox)
+                             let size = new THREE.Vector3();
+                             geometry.boundingBox.getSize(size);
+                             console.log(abs_size.x,size.x,abs_size.y,size.y)
+                             data[canvas_id].texts[i].position.set(-1*input_width/2-abs_size.x*0.1-0.1+(abs_size.x-size.x)*0.1,el*koef/2-2.5,input_height/2);
                              data[canvas_id].texts[i].rotation.set(0,0,0);
-                         }  
-                    
+                         } 
                          data[canvas_id].texts[i].scale.set(0.1,0.1,0.1);
                          data[canvas_id].scene.add( data[canvas_id].texts[i] );
                          i++;
@@ -267,16 +271,14 @@ export class Graph {
         }
         //add controls
         // controls
-
-				data[canvas_id].controls = new OrbitControls( data[canvas_id].camera, data[canvas_id].renderer.domElement );
-				data[canvas_id].controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-				data[canvas_id].controls.dampingFactor = 0.05;
-				data[canvas_id].controls.screenSpacePanning = false;
-				data[canvas_id].controls.minDistance = 100;
-				data[canvas_id].controls.maxDistance = 500;
-				data[canvas_id].controls.maxPolarAngle = Math.PI / 2;
+		data[canvas_id].controls = new OrbitControls( data[canvas_id].camera, data[canvas_id].renderer.domElement );
+		data[canvas_id].controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+		data[canvas_id].controls.dampingFactor = 0.05;
+		data[canvas_id].controls.screenSpacePanning = false;
+		data[canvas_id].controls.minDistance = 100;
+		data[canvas_id].controls.maxDistance = 500;
+		data[canvas_id].controls.maxPolarAngle = Math.PI / 2;
 				
-        
         data[canvas_id].animate(); //launch live rendering
         
         //add light
