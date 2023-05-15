@@ -2,7 +2,10 @@ import * as EL3D from "./library.js"
 
 let graph = {
     canvas_id: "canvas_1",
-    data: {maasdasdasdy:10,mayasfasfsafasnjflasjfalskfjlas1:100,july:1000,april1:10000,may1:400,june1:500,july1:600},
+    data: [{maasdasdasdy:100,sas1:200,july:300,april1:150,may1:350,june1:500},
+           {masfay:600,mayaslas1:400,may1:200,june1:400,july1:600},
+           {masfay:100,mayaslas1:200}],
+    //!maybe data_styles :
     label_y: "label_y",
     label_x: "label_x",
     label_val: true,

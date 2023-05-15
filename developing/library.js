@@ -8,6 +8,10 @@ import { TextGeometry }  from 'three/addons/geometries/TextGeometry.js'; //need 
 
 export var data = {};
 
+//!bugs and etc
+//when labels of values near then they are covering each other
+//!fix labels and all old things to the new with koef_x
+
 //api
 export class Graph {
   constructor(graph) {
@@ -43,6 +47,22 @@ export class Graph {
         if(this.input){
             if(Array.isArray(this.input)){
                 console.log("input is array");
+                let values = [];
+                this.input.map(el=>values.push(Object.values(el)));
+                //analyze each input and find 
+                //height and width
+                input_height = values.length;
+                input_width = 0;
+                let values_length =[];
+                values.map(el=>{
+                    values_length.push(el.length)
+                    if(el.length>input_width)input_width=el.length;
+                });
+                console.log(input_width);
+                //max_value and min_value
+                max_value = Math.max(...values.toString().split(","));
+                min_value = Math.min(...values.toString().split(","));
+                console.log(max_value,min_value);
             } else {
                 console.log("analyzing input");
                 let values = Object.values(this.input)
@@ -62,7 +82,7 @@ export class Graph {
         
         //temporary:
         //plane
-        let geometry_plane    = new THREE.PlaneGeometry( input_width, input_height );
+        let geometry_plane    = new THREE.PlaneGeometry( 10, input_height );
         let material_plane    = new THREE.MeshBasicMaterial( {color: 0xf4f4f4, side: THREE.DoubleSide} );
         data[canvas_id].plane = new THREE.Mesh( geometry_plane, material_plane );
         data[canvas_id].plane.position.set(0,-2.5,0);
@@ -71,7 +91,7 @@ export class Graph {
     
         //y 
         //axis                                            
-        let geometry_axis_y    = new THREE.BoxGeometry( 0.025, 5, 0.025 ); 
+        let geometry_axis_y    = new THREE.BoxGeometry( 0.025, 10, 0.025 ); 
         let material_axis_y    = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
         data[canvas_id].axis_y = new THREE.Mesh( geometry_axis_y, material_axis_y ); 
         data[canvas_id].axis_y.position.set(-1*input_width/2,0,input_height/2);
@@ -128,37 +148,48 @@ export class Graph {
             data[canvas_id].scene.add(data[canvas_id].label_x); 
         
         //vizualize input
-        let koef;
+        let koef_y;
+        let koef_x;
         if(!this.type)this.type="bar";
+        //!add loops with y shift
         if(this.type == "bar"){
             console.log("bar");
             data[canvas_id].bars = [];
-            let temp_values = Object.values(this.input)
-            console.log(temp_values)
-            let delta = max_value - min_value;
-                koef  = 4/delta;
-            for(let i = 0; i < input_width; i++){
-                let geometry = new THREE.BoxGeometry( 1, temp_values[i]*koef, 1 ); 
-                let material = new THREE.MeshBasicMaterial( {color: 0x0000ff} ); 
-                data[canvas_id].bars[i] = new THREE.Mesh( geometry, material ); 
-                data[canvas_id].bars[i].position.set(-1*input_width/2+i+0.5,temp_values[i]*koef/2-2.5,0);
-                data[canvas_id].scene.add( data[canvas_id].bars[i] );
+            for(let layer = 0; layer < input_height; layer++){
+                data[canvas_id].bars[layer] = []
+                let temp_values = Object.values(this.input[layer])
+                console.log(temp_values)
+                let delta = max_value - min_value;
+                    koef_y  = 4/delta;
+                    koef_x  = 10/input_width;
+                for(let i = 0; i < input_width; i++){
+                    let geometry = new THREE.BoxGeometry( 1*koef_x, temp_values[i]*koef_y, 1 ); 
+                    let material = new THREE.MeshPhongMaterial( {color: 0x0000ff} ); 
+                    data[canvas_id].bars[layer][i] = new THREE.Mesh( geometry, material ); 
+                    data[canvas_id].bars[layer][i].position.set(-1*input_width*koef_x/2+i*koef_x+0.5,temp_values[i]*koef_y/2-2.5,-0.5-layer+input_height/2);
+                    data[canvas_id].scene.add( data[canvas_id].bars[layer][i] );
+                }
             }
         } 
         if(this.type == "line"){
             console.log("line");
             data[canvas_id].points = [];
-            let temp_values = Object.values(this.input)
-            console.log(temp_values)
-            let delta = max_value - min_value;
-                koef  = 4/delta;
-            for(let i = 0; i < input_width; i++){
-                data[canvas_id].points.push( new THREE.Vector3(-1*input_width/2+i+0.5,temp_values[i]*koef/2-2.5, 0 ) );
+            data[canvas_id].lines  = [];
+            for(let layer = 0; layer < input_height; layer++){
+                data[canvas_id].points[layer] = [];   
+                let temp_values = Object.values(this.input[layer])
+                console.log(temp_values)
+                let delta = max_value - min_value;
+                    koef_y  = 4/delta;
+                for(let i = 0; i < temp_values.length; i++){
+                                                                                         //!must be related to input_width and layer width
+                    data[canvas_id].points[layer].push( new THREE.Vector3(-1*input_width/2+i+0.5,temp_values[i]*koef_y/2-2.5, 0-layer+input_height/2) );
+                }
+                let geometry = new THREE.BufferGeometry().setFromPoints( data[canvas_id].points[layer] );
+                let material = new THREE.LineBasicMaterial( { color: 0x0000ff} );
+                data[canvas_id].lines[layer] = new THREE.Line( geometry, material );
+                data[canvas_id].scene.add( data[canvas_id].lines[layer] );
             }
-            let geometry = new THREE.BufferGeometry().setFromPoints( data[canvas_id].points );
-            let material = new THREE.LineBasicMaterial( { color: 0x0000ff} );
-            data[canvas_id].line = new THREE.Line( geometry, material );
-            data[canvas_id].scene.add( data[canvas_id].line );
         } 
         
         //add values labels
@@ -170,7 +201,7 @@ export class Graph {
                  let temp_keys = Object.keys(input)
                  //add keys labels
                  let i;
-                 //if type bar - need find key with max length(for align) and precalculate geometry for koef of align
+                 //if type bar - need find key with max length(for align) and precalculate geometry for koef_y of align
                  let abs_size = new THREE.Vector3();
                  if(type=="bar"){
                      let max_length = 0;
@@ -217,11 +248,11 @@ export class Graph {
                  let values = Object.values(input);
                  values.sort();
                  for(let j = 1; j < values.length-1; j++){
-                    if(values[j]-values[j-1]<10){ //!
+                    if(values[j]-values[j-1]<10){ //!need clever diapason
                         values.splice(j,1); j--;
                     }
                  }
-                 //if type bar - need find key with max length(for align) and precalculate geometry for koef of align
+                 //if type bar - need find key with max length(for align) and precalculate geometry for koef_y of align
                  abs_size = new THREE.Vector3();
                  if(type=="bar"){
                      let max_length = 0;
@@ -250,7 +281,7 @@ export class Graph {
 	                     let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
                          data[canvas_id].texts[i] = new THREE.Mesh( geometry, material ); 
                          if(type == "line") {
-                             data[canvas_id].texts[i].position.set(-1*input_width/2,el*koef/2-2.5,input_height/2);
+                             data[canvas_id].texts[i].position.set(-1*input_width/2,el*koef_y/2-2.5,input_height/2);
                              data[canvas_id].texts[i].rotation.set(0,0,0);
                          }
                          if(type == "bar" ) {
@@ -260,7 +291,7 @@ export class Graph {
                              let size = new THREE.Vector3();
                              geometry.boundingBox.getSize(size);
                              console.log(abs_size.x,size.x,abs_size.y,size.y)
-                             data[canvas_id].texts[i].position.set(-1*input_width/2-abs_size.x*0.1-0.1+(abs_size.x-size.x)*0.1,el*koef/2-2.5,input_height/2);
+                             data[canvas_id].texts[i].position.set(-1*input_width/2-abs_size.x*0.1-0.1+(abs_size.x-size.x)*0.1,el*koef_y/2-2.5,input_height/2);
                              data[canvas_id].texts[i].rotation.set(0,0,0);
                          } 
                          data[canvas_id].texts[i].scale.set(0.1,0.1,0.1);
