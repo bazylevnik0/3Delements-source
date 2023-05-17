@@ -82,7 +82,7 @@ export class Graph {
         
         //temporary:
         //plane
-        let geometry_plane    = new THREE.PlaneGeometry( input_width*size_1_width, input_height*size_1_width );
+        let geometry_plane    = new THREE.PlaneGeometry( input_width*size_1_width, input_height*size_1_height );
         let material_plane    = new THREE.MeshBasicMaterial( {color: 0xf4f4f4, side: THREE.DoubleSide} );
         data[canvas_id].plane = new THREE.Mesh( geometry_plane, material_plane );
         //data[canvas_id].plane.position.set(0,-1*size_1_height,0);
@@ -148,10 +148,9 @@ export class Graph {
             data[canvas_id].label_x.position.set(input_width/2+0.05,-2.5,input_height/2);
             data[canvas_id].scene.add(data[canvas_id].label_x); 
         */
-        /*
         //vizualize input
-        let koef_y;
-        let koef_x;
+        //let koef_y;
+        //let koef_x;
         if(!this.type)this.type="bar";
         //!add loops with y shift
         if(this.type == "bar"){
@@ -161,18 +160,15 @@ export class Graph {
                 data[canvas_id].bars[layer] = []
                 let temp_values = Object.values(this.input[layer])
                 let delta = max_value - min_value;
-                    koef_y  = 4/delta;
                 for(let i = 0; i < input_width; i++){
-                    let geometry = new THREE.BoxGeometry( size_1_width, temp_values[i]*koef_y, size_1_width ); 
+                    let geometry = new THREE.BoxGeometry( size_1_width, temp_values[i]*3*size_1_height/delta, size_1_height ); 
                     let material = new THREE.MeshPhongMaterial( {color: 0x0000ff} ); 
                     data[canvas_id].bars[layer][i] = new THREE.Mesh( geometry, material ); 
-                    data[canvas_id].bars[layer][i].position.set(-1*input_width/2+i*size_1_width,temp_values[i]*koef_y/2-2.5,-0.5-layer+input_height/2);
+                data[canvas_id].bars[layer][i].position.set(size_1_width*((1-input_width)/2+i),0,size_1_height*(input_height/2-layer)-size_1_height/2);
                     data[canvas_id].scene.add( data[canvas_id].bars[layer][i] );
                 }
             }
         } 
-        */
-        /*
         if(this.type == "line"){
             console.log("line");
             data[canvas_id].points = [];
@@ -192,7 +188,6 @@ export class Graph {
                 data[canvas_id].scene.add( data[canvas_id].lines[layer] );
             }
         } 
-        */
         /*
         //add values labels
         let input = this.input;
