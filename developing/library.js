@@ -108,7 +108,7 @@ export class Graph {
         context_label_y.fillRect(0, 0, canvas_label_y.width, canvas_label_y.height);
         context_label_y.fillStyle = "red";
         if(this.label_y){  
-            context_label_y.fillText(""+this.label_y, canvas_label_y.width/2, canvas_label_y.height/8);
+            context_label_y.fillText(""+this.label_y, canvas_label_y.width/2, canvas_label_y.height/2);
         } else {
             context_label_y.fillText("y" , canvas_label_y.width/2, canvas_label_y.height/2);
         }
@@ -117,7 +117,7 @@ export class Graph {
         let sprite_material_label_y  = new THREE.SpriteMaterial( { map: texture_label_y } );
             data[canvas_id].label_y  = new THREE.Sprite( sprite_material_label_y );
                                                                               //!
-            data[canvas_id].label_y.position.set(-1*input_width*size_1_width/2,max_value/delta,input_height*size_1_height/2);
+            data[canvas_id].label_y.position.set(-1*input_width*size_1_width/2,0,input_height*size_1_height/2);
             data[canvas_id].scene.add(data[canvas_id].label_y);
         
         //x 
