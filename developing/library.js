@@ -39,11 +39,40 @@ export class Graph {
         }
         //temporary:
         //analyze input
-        let input_width;
-        let input_height;
-        let max_value;
-        let min_value;
-        if(this.input){
+        let input = this.input;
+        let input_keys   = Object.keys(input);
+        let input_values = Object.values(input);
+        let input_width  = 0;
+        let input_height = 0;
+        let max_value = Number.MIN_VALUE;
+        let min_value = Number.MAX_VALUE;
+        if(input){
+            //analyze input
+            
+            //define correctness of input(and fix if possible)
+            let check = true;
+            input_values.map(el=>{
+                if(!Array.isArray(el)){         //if not array
+                    if(typeof(el)=='number'){   //but number convert to array[0]
+                        el=[el];              
+                    } else check = false;       //if not number - this is incorrectly
+                }
+            })
+            if(!check){console.log("input values must be only numbers or arrays");return;}; //if incorrectly and not possible to fix then not loaded 
+        
+            //find input_height - "layers", input_width - max length values, and max/min
+            input_width = input_keys.length;
+            input_values.map(el=>{
+                let temp_length = el.length;
+                if(temp_length  > input_height)input_height = temp_length;
+                for(let i = 0; i < temp_length; i++){
+                    if(el[i]>max_value)max_value=el[i];
+                    if(el[i]<max_value)min_value=el[i];
+                }
+            })
+            console.log(input_height, input_width, max_value, min_value);
+            
+            /*
             if(Array.isArray(this.input)){
                 console.log("input is array");
                 let values = [];
@@ -70,13 +99,14 @@ export class Graph {
                 max_value = Math.max(...values);
                 min_value = Math.min(...values);
             }
+            */
         } else {
             console.log("empty input");
         }
         let size_1_width  = data[canvas_id].canvas.width/(input_width+2)/100;
         let size_1_height = data[canvas_id].canvas.height/(input_height+2)/100;
         let delta = max_value - min_value;
-        
+        /*
         //calculate and load
         //load plane with with axes
         
@@ -89,7 +119,6 @@ export class Graph {
         data[canvas_id].plane.rotation.set(Math.PI/2,0,0);
         data[canvas_id].scene.add(data[canvas_id].plane);
     
-        
         //y 
         //axis                                            
         let geometry_axis_y    = new THREE.BoxGeometry( 0.025, max_value*3*size_1_height/delta/2, 0.025 ); 
@@ -151,10 +180,7 @@ export class Graph {
             data[canvas_id].scene.add(data[canvas_id].label_x); 
             
         //vizualize input
-        //let koef_y;
-        //let koef_x;
         if(!this.type)this.type="bar";
-        //!add loops with y shift
         if(this.type == "bar"){
             console.log("bar");
             data[canvas_id].bars = [];
@@ -186,15 +212,107 @@ export class Graph {
                 data[canvas_id].scene.add( data[canvas_id].lines[layer] );
             }
         } 
-        /*
         //add values labels
-        let input = this.input;
         if(this.label_val){
             const loader = new FontLoader();
             loader.load( 'https://bazylevnik0.github.io/3Delements-source/fonts/open_sans_medium.json', function ( font ) {
-                 data[canvas_id].texts = [];
-                 let temp_keys = Object.keys(input)
-                 //add keys labels
+                 //add labels_keys
+                 data[canvas_id].labels_keys = [];
+                 for(let layer = 0; layer < input_height; layer++){
+                     let temp_keys = Object.keys(input[layer])
+                     data[canvas_id].labels_keys[layer] = [];
+                     for(let i = 0; i < temp_keys.length; i++){
+                         let geometry = new TextGeometry( temp_keys[i], {
+		                    font: font,
+		                    size: 1,
+		                    height: 0,
+		                    curveSegments: 6,
+	                     } );
+	                     let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
+                         data[canvas_id].labels_keys[layer][i] = new THREE.Mesh( geometry, material ); 
+                         if(type == "line") {
+                             data[canvas_id].labels_keys[layer][i].position.set(size_1_width*((1-input_width)/2+i),0-max_value*3*size_1_height/delta/2+0.005,size_1_height*(input_height/2-layer)-size_1_height/2 );
+                             data[canvas_id].labels_keys[layer][i].rotation.set(-Math.PI/2,0,Math.PI/2);
+                         }
+                     
+                         if(type == "bar") {
+                             geometry.computeBoundingBox()
+                             //geometry.center()
+                             let size = new THREE.Vector3();
+                             geometry.boundingBox.getSize(size);
+                             data[canvas_id].texts[i].position.set(-1*input_width/2+0.5+i,-2.45,input_height/2+abs_size.x*0.2+0.2-(abs_size.x-size.x)*0.2);
+                             data[canvas_id].texts[i].rotation.set(-Math.PI/2,0,Math.PI/2);
+                         }
+                         data[canvas_id].labels_keys[layer][i].scale.set(0.15,0.1,0.05);
+                         data[canvas_id].scene.add( data[canvas_id].labels_keys[layer][i] );
+                     }
+                 }
+                 
+                 //add labels_values
+                 data[canvas_id].labels_values = [];
+                 for(let layer = 0; layer < input_height; layer++){
+                     let temp_values = Object.values(input[layer])
+                     data[canvas_id].labels_values[layer] = [];
+                     for(let i = 0; i < temp_values.length; i++){
+                        let geometry = new TextGeometry( ""+temp_values[i], {
+		                    font: font,
+		                    size: 1,
+		                    height: 0,
+		                    curveSegments: 6,
+	                     });
+                         let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
+                         data[canvas_id].labels_values[layer][i] = new THREE.Mesh( geometry, material ); 
+                         
+                         if(type == "line") {
+                             data[canvas_id].labels_values[layer][i].position.set(-1*input_width*size_1_width/2,(3/2)*(size_1_height/delta)*(temp_values[i]-max_value),size_1_height*(input_height/2-layer)-size_1_height/2 );
+                             data[canvas_id].labels_values[layer][i].rotation.set(0,Math.PI/2,0);
+                         }
+                       
+                         if(type == "bar" ) {
+                              geometry.computeBoundingBox()
+                             //geometry.center()
+                             let size = new THREE.Vector3();
+                             geometry.boundingBox.getSize(size);
+                             data[canvas_id].texts[i].position.set(-1*input_width/2-abs_size.x*0.1-0.1+(abs_size.x-size.x)*0.1,el*koef_y/2-2.5,input_height/2);
+                             data[canvas_id].texts[i].rotation.set(0,0,0);
+                         } 
+                       
+                         data[canvas_id].labels_values[layer][i].scale.set(0.15,0.1,0.05);
+                         data[canvas_id].scene.add( data[canvas_id].labels_values[layer][i] );                       
+                     }
+                 }
+                 
+                 //for(let j = 0; j < input_width; j++)temp_values_map[""+values[j]]=values[j];
+               
+                 Object.values(temp_values_map).map(el=>{
+                         let geometry = new TextGeometry( ""+el, {
+		                    font: font,
+		                    size: 1,
+		                    height: 0,
+		                    curveSegments: 6,
+	                     });
+	                     let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
+                         data[canvas_id].texts[i] = new THREE.Mesh( geometry, material ); 
+                         if(type == "line") {
+                             data[canvas_id].texts[i].position.set(-1*input_width/2,el*koef_y/2-2.5,input_height/2);
+                             data[canvas_id].texts[i].rotation.set(0,0,0);
+                         }
+                         if(type == "bar" ) {
+                              geometry.computeBoundingBox()
+                             //geometry.center()
+                             let size = new THREE.Vector3();
+                             geometry.boundingBox.getSize(size);
+                             data[canvas_id].texts[i].position.set(-1*input_width/2-abs_size.x*0.1-0.1+(abs_size.x-size.x)*0.1,el*koef_y/2-2.5,input_height/2);
+                             data[canvas_id].texts[i].rotation.set(0,0,0);
+                         } 
+                         data[canvas_id].texts[i].scale.set(0.1,0.1,0.1);
+                         data[canvas_id].scene.add( data[canvas_id].texts[i] );
+                         i++;
+                 });
+                
+                 
+                 
+            
                  let i;
                  //if type bar - need find key with max length(for align) and precalculate geometry for koef_y of align
                  let abs_size = new THREE.Vector3();
@@ -244,6 +362,11 @@ export class Graph {
                         values.splice(j,1); j--;
                     }
                  }
+            
+                 
+                 
+                 
+              
                  //if type bar - need find key with max length(for align) and precalculate geometry for koef_y of align
                  abs_size = new THREE.Vector3();
                  if(type=="bar"){
@@ -288,6 +411,7 @@ export class Graph {
             } );
         }
         */
+
         //add controls
         // controls
 		data[canvas_id].controls = new OrbitControls( data[canvas_id].camera, data[canvas_id].renderer.domElement );
