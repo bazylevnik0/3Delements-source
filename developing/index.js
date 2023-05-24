@@ -1,6 +1,6 @@
 import * as EL3D from "./library.js"
 
-let test = "line";
+let test = "bar";
 let graph0 = {
     canvas_id: "canvas_0",
     data: {abc:100,abc1:[400,200],abc2:[300,0,600]},
