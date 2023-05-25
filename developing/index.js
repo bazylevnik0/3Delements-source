@@ -37,6 +37,7 @@ let graph2 = {
     graph2 = new EL3D.Graph(graph2);
     graph2.init();
 
+/*
 let graph3 = {
     canvas_id: "canvas_3",
     data: {abc:"asd",abc1:400,abc2:[300,0,600]},
@@ -48,6 +49,7 @@ let graph3 = {
 }
     graph3 = new EL3D.Graph(graph3);
     graph3.init();
+*/
 
 let graph4 = {
     canvas_id: "canvas_4",

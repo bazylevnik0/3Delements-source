@@ -196,23 +196,42 @@ export class Graph {
             //add labels of values
             const loader = new FontLoader();
             loader.load( 'https://bazylevnik0.github.io/3Delements-source/fonts/open_sans_medium.json', function ( font ) {
-                data[canvas_id].labels_values = [];
-                 for(let layer = 0; layer < input_height; layer++){
-                     let temp_values = Object.values(input[layer])
-                     data[canvas_id].labels_values[layer] = [];
-                     //calculate measurement for delta and round it for beauty numbers, store it in array
-                     //draw array;
-                     
+                 data[canvas_id].labels_values        = [];
+                 data[canvas_id].labels_values_meshes = [];
+                 //calculate measurement delta and store steps of measure numbers, store it in array
+                 let step = delta / 10;
+                 for(let i = 0; i < 10; i++)data[canvas_id].labels_values[i]=min_value+step*i;
+                 console.log(data[canvas_id].labels_values);
+                 //draw labels_values
+                 //find width of max_value box
+                 let max_size = new THREE.Vector3();
+                 let geometry_max = new TextGeometry( ""+max_value, {
+		             font: font,
+		             size: 1,
+		             height: 0,
+		             curveSegments: 6,
+	             });
+	             geometry_max.computeBoundingBox();
+                 geometry_max.boundingBox.getSize(max_size);
+                 //draw values
+                 for(let i = 0; i < 10; i++){
+                    let geometry = new TextGeometry(""+data[canvas_id].labels_values[i], {
+		                font: font,
+		                size: 0.1,
+		                height: 0,
+		                curveSegments: 6,
+	                });
+	                let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
+                    data[canvas_id].labels_values_meshes[i] = new THREE.Mesh(geometry, material);
+                    let size = new THREE.Vector3();
+                    geometry.computeBoundingBox();
+                    geometry.boundingBox.getSize(size);
+                    data[canvas_id].labels_values_meshes[i].position.set(-1*input_width*size_1_width/2,max_value*3*i*0.1/delta/2,input_height*size_1_height/2);
+                    data[canvas_id].labels_values_meshes[i].rotation.set(0,0,0);
+                    data[canvas_id].scene.add(data[canvas_id].labels_values_meshes[i]);                       
+                 }
+                     //draw array       
                      /*
-                     for(let i = 0; i < temp_values.length; i++){
-                        let geometry = new TextGeometry( ""+temp_values[i], {
-		                    font: font,
-		                    size: 1,
-		                    height: 0,
-		                    curveSegments: 6,
-	                     });
-                         let material = new THREE.MeshBasicMaterial( {color: 0xff0000} ); 
-                         data[canvas_id].labels_values[layer][i] = new THREE.Mesh( geometry, material ); 
                          if(type == "line") {
                              data[canvas_id].labels_values[layer][i].position.set(-1*input_width*size_1_width/2,(3/2)*(size_1_height/delta)*(temp_values[i]-max_value),size_1_height*(input_height/2-layer)-size_1_height/2 );
                              data[canvas_id].labels_values[layer][i].rotation.set(0,Math.PI/2,0);
@@ -229,9 +248,8 @@ export class Graph {
                          data[canvas_id].labels_values[layer][i].scale.set(0.15,0.1,0.05);
                          data[canvas_id].scene.add(data[canvas_id].labels_values[layer][i]);                       
                      }
-                     */
-                 }    
-            }
+                     */    
+            });
         }
         
         
