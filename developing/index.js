@@ -4,8 +4,7 @@ let test = "line";
 let graph0 = {
     canvas_id: "canvas_0",
     data: {abc:100,abc1:[400,200],abc2:[300,0,600]},
-    //!maybe data_styles :
-    label_y: "label_y",
+     label_y: "label_y",
     label_x: "label_x",
     label_val: true,
     type: test,
@@ -16,7 +15,6 @@ let graph0 = {
 let graph1 = {
     canvas_id: "canvas_1",
     data: {abc:[100,600,100],abc1:[400,200],abc2:300},
-    //!maybe data_styles :
     label_y: "label_y",
     label_x: "label_x",
     label_val: true,
