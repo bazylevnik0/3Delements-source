@@ -8,12 +8,6 @@ import { TextGeometry }  from 'three/addons/geometries/TextGeometry.js'; //need 
 
 export var data = {};
 
-//!bugs and etc
-//heh, when tested labels found interesting bug with graph are going to outside of canvas:
-//*data: {abc:[1000,600,100],abc1:[400,200],abc2:[300,0,600],asafafbc:[100,600,100],abgegec1:[400,200],abwwc2:[300,0,600]},
-//*<canvas id="canvas_7" width="800" height="600" style="border: 1px solid black"></canvas>
-//*when 10000 all is ok
-
 //api
 export class Graph {
   constructor(graph) {
@@ -96,10 +90,10 @@ export class Graph {
     
         //y 
         //axis                                            
-        let geometry_axis_y    = new THREE.BoxGeometry( 0.025, max_value*3*size_1_height/delta/2, 0.025 ); 
+        let geometry_axis_y    = new THREE.BoxGeometry( 0.025, max_value*3*size_1_height/delta, 0.025 ); 
         let material_axis_y    = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
         data[canvas_id].axis_y = new THREE.Mesh(geometry_axis_y, material_axis_y); 
-        data[canvas_id].axis_y.position.set(-1*input_width*size_1_width/2,-1*max_value*3*size_1_height/delta/4,input_height*size_1_height/2);
+        data[canvas_id].axis_y.position.set(-1*input_width*size_1_width/2,-1*max_value*3*size_1_height/delta/6+size_1_height/2,input_height*size_1_height/2);
         data[canvas_id].scene.add( data[canvas_id].axis_y );
         //label
         let canvas_label_y = document.createElement('canvas');
@@ -121,7 +115,7 @@ export class Graph {
         let sprite_material_label_y  = new THREE.SpriteMaterial( { map: texture_label_y } );
             data[canvas_id].label_y  = new THREE.Sprite( sprite_material_label_y );
                                                                               //! *really forget why it is important for change, but was important
-            data[canvas_id].label_y.position.set(-1*input_width*size_1_width/2,0,input_height*size_1_height/2);
+            data[canvas_id].label_y.position.set(-1*input_width*size_1_width/2,size_1_height*1.5,input_height*size_1_height/2);
             data[canvas_id].scene.add(data[canvas_id].label_y);
         
         //x 
