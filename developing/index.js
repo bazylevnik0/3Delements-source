@@ -87,7 +87,7 @@ let graph6 = {
 
 let graph7 = {
     canvas_id: "canvas_7",
-    data: {abc:[10000,600,100],abc1:[400,200],abc2:[300,0,600],asafafbc:[100,600,100],abgegec1:[400,200],abwwc2:[300,0,600]},
+    data: {abc:[1000,600,100],abc1:[400,200],abc2:[300,0,600],asafafbc:[100,600,100],abgegec1:[400,200],abwwc2:[300,0,600]},
     //!maybe data_styles :
     label_y: "label_y",
     label_x: "label_x",
