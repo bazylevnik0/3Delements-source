@@ -9,6 +9,16 @@ import { TextGeometry }  from 'three/addons/geometries/TextGeometry.js'; //need 
 export var data = {};
 console.log("test");
 //api
+export class Viewer {
+  constructor(viewer) {
+    this.canvas_id = viewer.canvas_id;
+    this.init      = function(){
+        let canvas_id = this.canvas_id;
+        console.log(canvas_id);
+    }
+  }
+}
+
 export class Graph {
   constructor(graph) {
     this.canvas_id = graph.canvas_id;
