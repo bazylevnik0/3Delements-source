@@ -6,9 +6,120 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';  //need 
 import { FontLoader }    from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry }  from 'three/addons/geometries/TextGeometry.js'; //need for text
 
+//!for viewer need a perspective camera
 export var data = {};
 console.log("test");
 //api
+export class Viewer {
+  constructor(viewer) {
+    this.canvas_id     = viewer.canvas_id;
+    this.url           = viewer.url;
+    this.scale         = viewer.scale;
+    this.width         = viewer.width;
+    this.height        = viewer.height;
+    this.depth         = viewer.depth;
+    this.position_x    = viewer.position_x;
+    this.position_y    = viewer.position_y;
+    this.position_z    = viewer.position_z;
+    this.rotation_x    = viewer.rotation_x;
+    this.rotation_y    = viewer.rotation_y;
+    this.rotation_z    = viewer.rotation_z;
+    this.mode          = viewer.mode;
+    this.position_path = viewer.position_path;
+    this.rotation_path = viewer.rotation_path;
+    this.init = function(){
+        let canvas_id = this.canvas_id;
+        console.log(canvas_id);
+        data[canvas_id] = {};               //create object in data
+        prepare_WebGL_context(canvas_id);   //prepare drawing context with common template for all apis
+        
+        if(this.mode=="viewer"||this.mode==undefined)
+        {
+            //add controls
+            // controls
+		    data[canvas_id].controls = new OrbitControls( data[canvas_id].camera, data[canvas_id].renderer.domElement );
+		    data[canvas_id].controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+		    data[canvas_id].controls.dampingFactor = 0.05;
+		    data[canvas_id].controls.screenSpacePanning = false;
+		    data[canvas_id].controls.minDistance = 100;
+		    data[canvas_id].controls.maxDistance = 500;
+		    data[canvas_id].controls.maxPolarAngle = Math.PI / 2;
+        }	
+    
+        //set animation loop and handlers
+        data[canvas_id].clock = new THREE.Clock(); //time for animation
+        data[canvas_id].camera.position.set(0,0,5);
+        //live rendering, calling in the end of this class
+        data[canvas_id].animate = function () {
+            data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() ); //update animations 
+
+	        requestAnimationFrame( data[canvas_id].animate );
+	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
+        }
+       
+        let width    = this.width;
+        let height   = this.height;
+        let depth    = this.depth;
+        let position_x = this.position_x;
+        let position_y = this.position_y;
+        let position_z = this.position_z;
+        let rotation_x = this.rotation_x;
+        let rotation_y = this.rotation_y;
+        let rotation_z = this.rotation_z;
+        let url = this.url;
+        const dracoLoader = new DRACOLoader();
+			dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
+
+			const loader = new GLTFLoader();
+			loader.setDRACOLoader( dracoLoader );
+			loader.load( url, function ( gltf ) {
+
+				data[canvas_id].model = gltf.scene;
+				
+				//set position
+				position_x?position_x=position_x:position_x=0;
+				position_y?position_y=position_y:position_y=0;
+				position_z?position_z=position_z:position_z=0;    
+			    data[canvas_id].model.position.set( 0+position_x, 0+position_y, 0+position_z );
+				//set scale
+				width?width=width:width=1;
+				height?height=height:height=1;
+				depth?depth=depth:depth=1;
+				data[canvas_id].model.scale.set( width, height, depth );
+                //set position
+				position_x?position_x=position_x:position_x=0;
+				position_y?position_y=position_y:position_y=0;
+				position_z?position_z=position_z:position_z=0;    
+			    data[canvas_id].model.position.set( 0+position_x, 0+position_y, 0+position_z );
+				//set rotation
+                rotation_x?rotation_x=rotation_x:rotation_x=0;
+                rotation_y?rotation_y=rotation_y:rotation_y=0;
+                rotation_z?rotation_z=rotation_z:rotation_z=0;    
+                data[canvas_id].model.rotation.set( 0+rotation_x, 0+rotation_y, 0+rotation_z );	    
+				
+				data[canvas_id].scene.add( data[canvas_id].model );
+
+				data[canvas_id].mixer = new THREE.AnimationMixer( data[canvas_id].model );
+				gltf.animations.map(el=>data[canvas_id].mixer.clipAction(el).play())
+			
+				data[canvas_id].animate();
+
+			}, undefined, function ( e ) {
+				console.error( e );
+		} );
+
+        //add light
+        data[canvas_id].ambientLight = new THREE.AmbientLight()
+        data[canvas_id].ambientLight.intensity = 0.2;
+        data[canvas_id].pointLight = new THREE.PointLight()
+        data[canvas_id].pointLight.position.set(10, 10, 10)
+        data[canvas_id].scene.add(data[canvas_id].ambientLight)
+        data[canvas_id].scene.add(data[canvas_id].pointLight)
+    
+    }
+  }
+}
+
 export class Graph {
   constructor(graph) {
     this.canvas_id = graph.canvas_id;
