@@ -63,12 +63,16 @@ export class Viewer {
         let position_x = this.position_x;
         let position_y = this.position_y;
         let position_z = this.position_z;
+        let rotation_x = this.rotation_x;
+        let rotation_y = this.rotation_y;
+        let rotation_z = this.rotation_z;
+        let url = this.url;
         const dracoLoader = new DRACOLoader();
 			dracoLoader.setDecoderPath( 'jsm/libs/draco/gltf/' );
 
 			const loader = new GLTFLoader();
 			loader.setDRACOLoader( dracoLoader );
-			loader.load( 'https://bazylevnik0.github.io/3Delements-source/models/sample.glb', function ( gltf ) {
+			loader.load( url, function ( gltf ) {
 
 				data[canvas_id].model = gltf.scene;
 				
@@ -82,7 +86,16 @@ export class Viewer {
 				height?height=height:height=1;
 				depth?depth=depth:depth=1;
 				data[canvas_id].model.scale.set( width, height, depth );
-		    
+                //set position
+				position_x?position_x=position_x:position_x=0;
+				position_y?position_y=position_y:position_y=0;
+				position_z?position_z=position_z:position_z=0;    
+			    data[canvas_id].model.position.set( 0+position_x, 0+position_y, 0+position_z );
+				//set rotation
+                rotation_x?rotation_x=rotation_x:rotation_x=0;
+                rotation_y?rotation_y=rotation_y:rotation_y=0;
+                rotation_z?rotation_z=rotation_z:rotation_z=0;    
+                data[canvas_id].model.rotation.set( 0+rotation_x, 0+rotation_y, 0+rotation_z );	    
 				
 				data[canvas_id].scene.add( data[canvas_id].model );
 
