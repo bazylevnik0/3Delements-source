@@ -6,7 +6,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';  //need 
 import { FontLoader }    from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry }  from 'three/addons/geometries/TextGeometry.js'; //need for text
 
-//!for viewer need a perspective camera
 export var data = {};
 console.log("test");
 //api
@@ -14,6 +13,7 @@ export class Viewer {
   constructor(viewer) {
     this.canvas_id     = viewer.canvas_id;
     this.url           = viewer.url;
+    this.camera_mode   = viewer.camera_mode;
     this.scale         = viewer.scale;
     this.width         = viewer.width;
     this.height        = viewer.height;
@@ -25,23 +25,31 @@ export class Viewer {
     this.rotation_y    = viewer.rotation_y;
     this.rotation_z    = viewer.rotation_z;
     this.mode          = viewer.mode;
-    this.position_path = viewer.position_path;
-    this.rotation_path = viewer.rotation_path;
+    this.position_path       = viewer.position_path;
+    this.position_path_cycle = viewer.position_path;
+    this.rotation_path       = viewer.rotation_path;
+    this.rotation_path_cycle = viewer.rotation_path;
     this.init = function(){
         let canvas_id = this.canvas_id;
         console.log(canvas_id);
         data[canvas_id] = {};               //create object in data
         prepare_WebGL_context(canvas_id);   //prepare drawing context with common template for all apis
-        
+        //set perspective camera for viewer not  ortographic mode
+        if(this.camera_mode!=="ortographic"){
+            data[canvas_id].camera = new THREE.PerspectiveCamera( 90, data[canvas_id].canvas.width / data[canvas_id].canvas.height, 0.1, 1000 );
+        }
+        let mode;
         if(this.mode=="viewer"||this.mode==undefined)
         {
+            mode ="viewer";
             //add controls
-            // controls
+            //controls
 		    data[canvas_id].controls = new OrbitControls( data[canvas_id].camera, data[canvas_id].renderer.domElement );
-		    data[canvas_id].controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-		    data[canvas_id].controls.dampingFactor = 0.05;
+	
+            data[canvas_id].controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+            data[canvas_id].controls.dampingFactor = 0.05;
 		    data[canvas_id].controls.screenSpacePanning = false;
-		    data[canvas_id].controls.minDistance = 100;
+		    data[canvas_id].controls.minDistance = 0;
 		    data[canvas_id].controls.maxDistance = 500;
 		    data[canvas_id].controls.maxPolarAngle = Math.PI / 2;
         }	
@@ -52,8 +60,9 @@ export class Viewer {
         //live rendering, calling in the end of this class
         data[canvas_id].animate = function () {
             data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() ); //update animations 
-
-	        requestAnimationFrame( data[canvas_id].animate );
+     
+            if(mode=="viewer")data[canvas_id].controls.update();
+            requestAnimationFrame( data[canvas_id].animate );
 	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
         }
        
@@ -355,8 +364,8 @@ export class Graph {
 		data[canvas_id].controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
 		data[canvas_id].controls.dampingFactor = 0.05;
 		data[canvas_id].controls.screenSpacePanning = false;
-		data[canvas_id].controls.minDistance = 100;
-		data[canvas_id].controls.maxDistance = 500;
+		data[canvas_id].controls.minDistance = 100;  //!not need? in ortographic
+		data[canvas_id].controls.maxDistance = 500;  //!not need? in ortographic
 		data[canvas_id].controls.maxPolarAngle = Math.PI / 2;
 				
         data[canvas_id].animate(); //launch live rendering
