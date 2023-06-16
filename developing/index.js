@@ -45,10 +45,10 @@ let viewer3 = {
     rotation_y: -1.25,
     width: 3.5,
     height: 3.5,
-    depth: 3.5,     //"time":[position] 
-    position_path: [{"2":[1,0,1]},{"4":[-1,0,1]}],
-    position_path_cycle: true,
-    rotation_path: [{"2":[0,25,0,0]},{"4":[-0.25,0,0]}],
+    depth: 3.5,    //"time":[position] 
+    position_path: [{"2":[3,0,1]},{"4":[-1,0,1]},{"6":[-3,0,1]}],
+    position_path_cycle: false,
+    rotation_path: [{"2":[1,0,0]},{"4":[-1,0,0]},{"6":[0,-1,0]}],
     rotation_path_cycle: true,
 }
 viewer3 = new EL3D.Viewer(viewer3);

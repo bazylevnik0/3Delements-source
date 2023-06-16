@@ -26,9 +26,9 @@ export class Viewer {
     this.rotation_z    = viewer.rotation_z;
     this.mode          = viewer.mode;
     this.position_path       = viewer.position_path;
-    this.position_path_cycle = viewer.position_path;
+    this.position_path_cycle = viewer.position_path_cycle;
     this.rotation_path       = viewer.rotation_path;
-    this.rotation_path_cycle = viewer.rotation_path;
+    this.rotation_path_cycle = viewer.rotation_path_cycle;
     this.init = function(){
         let canvas_id = this.canvas_id;
         console.log(canvas_id);
@@ -57,10 +57,109 @@ export class Viewer {
         //set animation loop and handlers
         data[canvas_id].clock = new THREE.Clock(); //time for animation
         data[canvas_id].camera.position.set(0,0,5);
+        //build paths and prepare to animate moving
+        let steps_position = [];
+        let steps_rotation = [];
+        let position_path       = this.position_path;
+        let position_path_cycle = this.position_path_cycle;
+        let rotation_path       = this.rotation_path;
+        let rotation_path_cycle = this.rotation_path_cycle;
+        let steps_position_current;
+        let steps_rotation_current;
+        if(position_path){
+            for(let i = 0; i < position_path.length; i++) steps_position.push(i);
+            steps_position_current = 0;
+        }
+        if(rotation_path){
+            for(let i = 0; i < rotation_path.length; i++) steps_rotation.push(i);
+            steps_rotation_current = 0;
+        }
         //live rendering, calling in the end of this class
         data[canvas_id].animate = function () {
             data[canvas_id].mixer.update( data[canvas_id].clock.getDelta() ); //update animations 
-     
+            
+            //if moving paths exist then moving through the moving programs(paths) //! maybe move to the function, for reduce calculation only when changing step
+            if(position_path){
+                //check destination and current position
+                let current_position     = data[canvas_id].camera.position;
+                let destination = position_path[steps_position_current];
+                let destination_position = Object.values(destination)[0];
+                let destination_time     = Object.keys(destination)[0];      //very near to destination
+                let check_pos_x = false;
+                if(Math.abs(data[canvas_id].camera.position.x-destination_position[0])>0.1){
+                   data[canvas_id].camera.position.x += (destination_position[0] - current_position.x)/(+destination_time*24);
+                } else {
+                    check_pos_x = true;
+                }
+                let check_pos_y = false;
+                if(data[canvas_id].camera.position.y-destination_position[1]>0.1){
+                   data[canvas_id].camera.position.y += (destination_position[1] - current_position.y)/(+destination_time*24);
+                } else {
+                    check_pos_y = true;
+                }
+                let check_pos_z = false;
+                if(data[canvas_id].camera.position.z-destination_position[2]>0.1){
+                   data[canvas_id].camera.position.z += (destination_position[2] - current_position.z)/(+destination_time*24);
+                } else {
+                    check_pos_z = true;
+                }
+                //if near to destination, change step of path
+                if(check_pos_x&&check_pos_y&&check_pos_z){
+                    steps_position_current++;
+                    //if end of the way, check loop, and if need start again
+                    if(steps_position_current>=position_path.length){
+                        if(position_path_cycle){
+                            steps_position_current = 0; //start again
+                        } else steps_position_current = position_path.length -1; //stuck in the end
+                    }
+                }
+                
+                
+            }
+            //if moving paths exist then moving through the moving programs(paths) //! maybe move to the function, for calculation only when changing step
+            if(rotation_path){
+                //check destination and current rotation
+                let current_rotation     = data[canvas_id].camera.rotation;
+                let destination = rotation_path[steps_rotation_current];
+                let destination_rotation = Object.values(destination)[0];
+                let destination_time     = Object.keys(destination)[0];      //very near to destination
+                let check_pos_x = false;
+                if(Math.abs(data[canvas_id].camera.rotation.x-destination_rotation[0])>0.1){
+                   data[canvas_id].camera.rotation.x += (destination_rotation[0] - current_rotation.x)/(+destination_time*24);
+                } else {
+                    check_pos_x = true;
+                }
+                let check_pos_y = false;
+                if(data[canvas_id].camera.rotation.y-destination_rotation[1]>0.1){
+                   data[canvas_id].camera.rotation.y += (destination_rotation[1] - current_rotation.y)/(+destination_time*24);
+                } else {
+                    check_pos_y = true;
+                }
+                let check_pos_z = false;
+                if(data[canvas_id].camera.rotation.z-destination_rotation[2]>0.1){
+                   data[canvas_id].camera.rotation.z += (destination_rotation[2] - current_rotation.z)/(+destination_time*24);
+                } else {
+                    check_pos_z = true;
+                }
+                //if near to destination, change step of path
+                if(check_pos_x&&check_pos_y&&check_pos_z){
+                    steps_rotation_current++;
+                    //if end of the way, check loop, and if need start again
+                    if(steps_rotation_current>=rotation_path.length){
+                        if(rotation_path_cycle){
+                            steps_rotation_current = 0; //start again
+
+                        } else steps_rotation_current = rotation_path.length -1; //stuck in the end
+                    }
+                }
+                
+                
+            }
+            
+            //console.log(data[canvas_id].camera.position);
+            //console.log(data[canvas_id].camera.rotation);
+            
+            
             if(mode=="viewer")data[canvas_id].controls.update();
             requestAnimationFrame( data[canvas_id].animate );
 	        data[canvas_id].renderer.render( data[canvas_id].scene, data[canvas_id].camera );
