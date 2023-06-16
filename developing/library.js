@@ -92,13 +92,13 @@ export class Viewer {
                     check_pos_x = true;
                 }
                 let check_pos_y = false;
-                if(data[canvas_id].camera.position.y-destination_position[1]>0.1){
+                if(Math.abs(data[canvas_id].camera.position.y-destination_position[1])>0.1){
                    data[canvas_id].camera.position.y += (destination_position[1] - current_position.y)/(+destination_time*24);
                 } else {
                     check_pos_y = true;
                 }
                 let check_pos_z = false;
-                if(data[canvas_id].camera.position.z-destination_position[2]>0.1){
+                if(Math.abs(data[canvas_id].camera.position.z-destination_position[2])>0.1){
                    data[canvas_id].camera.position.z += (destination_position[2] - current_position.z)/(+destination_time*24);
                 } else {
                     check_pos_z = true;
@@ -130,13 +130,13 @@ export class Viewer {
                     check_pos_x = true;
                 }
                 let check_pos_y = false;
-                if(data[canvas_id].camera.rotation.y-destination_rotation[1]>0.1){
+                if(Math.abs(data[canvas_id].camera.rotation.y-destination_rotation[1])>0.1){
                    data[canvas_id].camera.rotation.y += (destination_rotation[1] - current_rotation.y)/(+destination_time*24);
                 } else {
                     check_pos_y = true;
                 }
                 let check_pos_z = false;
-                if(data[canvas_id].camera.rotation.z-destination_rotation[2]>0.1){
+                if(Math.abs(data[canvas_id].camera.rotation.z-destination_rotation[2])>0.1){
                    data[canvas_id].camera.rotation.z += (destination_rotation[2] - current_rotation.z)/(+destination_time*24);
                 } else {
                     check_pos_z = true;
