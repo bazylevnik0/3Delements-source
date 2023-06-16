@@ -24,6 +24,12 @@ export class Viewer {
     this.rotation_x    = viewer.rotation_x;
     this.rotation_y    = viewer.rotation_y;
     this.rotation_z    = viewer.rotation_z;
+    this.camera_position_x    = viewer.camera_position_x;
+    this.camera_position_y    = viewer.camera_position_y;
+    this.camera_position_z    = viewer.camera_position_z;
+    this.camera_rotation_x    = viewer.camera_rotation_x;
+    this.camera_rotation_y    = viewer.camera_rotation_y;
+    this.camera_rotation_z    = viewer.camera_rotation_z;
     this.mode          = viewer.mode;
     this.position_path       = viewer.position_path;
     this.position_path_cycle = viewer.position_path_cycle;
@@ -38,6 +44,18 @@ export class Viewer {
         if(this.camera_mode!=="ortographic"){
             data[canvas_id].camera = new THREE.PerspectiveCamera( 90, data[canvas_id].canvas.width / data[canvas_id].canvas.height, 0.1, 1000 );
         }
+        //set position of camera if need
+		this.camera_position_x?this.camera_position_x=this.camera_position_x:this.camera_position_x=0;
+		this.camera_position_y?this.camera_position_y=this.camera_position_y:this.camera_position_y=0;
+		this.camera_position_z?this.camera_position_z=this.camera_position_z:this.camera_position_z=5;    
+		data[canvas_id].camera.position.set(this.camera_position_x, this.camera_position_y, this.camera_position_z );
+		//set rotation of camera if need
+        this.camera_rotation_x?this.camera_rotation_x=this.camera_rotation_x:this.camera_rotation_x=0;
+        this.camera_rotation_y?this.camera_rotation_y=this.camera_rotation_y:this.camera_rotation_y=0;
+        this.camera_rotation_z?this.camera_rotation_z=this.camera_rotation_z:this.camera_rotation_z=0;    
+        data[canvas_id].camera.rotation.set(this.camera_rotation_x, this.camera_rotation_y, this.camera_rotation_z );
+			
+        
         let mode;
         if(this.mode=="viewer"||this.mode==undefined)
         {
@@ -56,7 +74,6 @@ export class Viewer {
     
         //set animation loop and handlers
         data[canvas_id].clock = new THREE.Clock(); //time for animation
-        data[canvas_id].camera.position.set(0,0,5);
         //build paths and prepare to animate moving
         let steps_position = [];
         let steps_rotation = [];
